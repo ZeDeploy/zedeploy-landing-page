@@ -54,8 +54,8 @@ export default function Header() {
           <Image
             src="/zedeploy_logo.png"
             alt="ZeDeploy logo"
-            width={150}
-            height={50}
+            width={500}
+            height={500}
             priority
           />
         </a>

@@ -65,6 +65,8 @@ a {
 
 .logo img {
   display: block;
+  width: auto;
+  height: 48px;
 }
 
 nav {
@@ -654,8 +656,8 @@ nav a:hover {
   }
 
   .logo img {
-    width: 110px;
-    height: auto;
+    width: auto;
+    height: 40px;
   }
 
   .hamburger {
