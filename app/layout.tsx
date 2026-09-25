@@ -5,6 +5,10 @@ export const metadata: Metadata = {
   title: "ZeDeploy - Cloud Infrastructure Solutions",
   description:
     "Enterprise-grade cloud infrastructure solutions for modern businesses. From deployment to optimization, we've got you covered.",
+  icons: {
+    icon: "/zedeploy_logo.png",
+    apple: "/zedeploy_logo.png",
+  },
 };
 
 export default function RootLayout({

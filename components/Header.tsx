@@ -5,7 +5,7 @@ import Image from "next/image";
 
 const navLinks = [
   { href: "#services", label: "Services" },
-  { href: "#infrastructure", label: "Infrastructure" },
+  { href: "#contact", label: "Infrastructure" },
   { href: "#contact-form", label: "Contact" },
 ];
 
@@ -66,7 +66,7 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-          <a href="#services" className="start-button">
+          <a href="#contact-form" className="start-button">
             Get Started
           </a>
         </nav>
@@ -100,7 +100,7 @@ export default function Header() {
             </a>
           ))}
           <a
-            href="#services"
+            href="#contact-form"
             className="start-button"
             onClick={() => setMenuOpen(false)}
           >

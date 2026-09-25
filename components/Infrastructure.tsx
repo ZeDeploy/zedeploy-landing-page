@@ -64,14 +64,21 @@ export default function Infrastructure() {
                 />
               </g>
 
-              {/* Orbiting infrastructure nodes */}
+              {/* Four balls riding the white dotted line — each color
+                  pair sits in its own arc and swings toward a meeting
+                  point: the yellow balls collide and reverse, and the
+                  white balls do the same on the opposite side */}
               <g className="orbit orbit-a">
-                <circle className="node node-gold" cx="150" cy="32" r="6" />
-                <circle className="node node-white" cx="268" cy="150" r="4.5" />
+                <circle className="node node-gold" cx="150" cy="18" r="6" />
               </g>
               <g className="orbit orbit-b">
-                <circle className="node node-white" cx="32" cy="150" r="4.5" />
-                <circle className="node node-gold" cx="150" cy="268" r="6" />
+                <circle className="node node-gold" cx="282" cy="150" r="6" />
+              </g>
+              <g className="orbit orbit-c">
+                <circle className="node node-white" cx="150" cy="282" r="4.5" />
+              </g>
+              <g className="orbit orbit-d">
+                <circle className="node node-white" cx="18" cy="150" r="4.5" />
               </g>
 
               {/* Center tile with ZeDeploy logo */}
