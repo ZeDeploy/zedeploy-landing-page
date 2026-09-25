@@ -64,21 +64,42 @@ export default function Infrastructure() {
                 />
               </g>
 
-              {/* Four balls riding the white dotted line — each color
-                  pair sits in its own arc and swings toward a meeting
-                  point: the yellow balls collide and reverse, and the
-                  white balls do the same on the opposite side */}
-              <g className="orbit orbit-a">
-                <circle className="node node-gold" cx="150" cy="18" r="6" />
+              {/* Orbiting infrastructure nodes — yellow balls and white balls rotate in a round;
+                  when balls collide, they reverse rotation direction. */}
+              {/* White ball orbit pair (outer dotted ring, radius = 132) */}
+              <g className="orbit-white-cw">
+                <circle
+                  className="node node-white node-white-cw"
+                  cx="150"
+                  cy="18"
+                  r="4.5"
+                />
               </g>
-              <g className="orbit orbit-b">
-                <circle className="node node-gold" cx="282" cy="150" r="6" />
+              <g className="orbit-white-ccw">
+                <circle
+                  className="node node-white node-white-ccw"
+                  cx="150"
+                  cy="18"
+                  r="4.5"
+                />
               </g>
-              <g className="orbit orbit-c">
-                <circle className="node node-white" cx="150" cy="282" r="4.5" />
+
+              {/* Yellow (gold) ball orbit pair (inner dashed ring, radius = 118) */}
+              <g className="orbit-gold-cw">
+                <circle
+                  className="node node-gold node-gold-cw"
+                  cx="150"
+                  cy="32"
+                  r="6"
+                />
               </g>
-              <g className="orbit orbit-d">
-                <circle className="node node-white" cx="18" cy="150" r="4.5" />
+              <g className="orbit-gold-ccw">
+                <circle
+                  className="node node-gold node-gold-ccw"
+                  cx="150"
+                  cy="32"
+                  r="6"
+                />
               </g>
 
               {/* Center tile with ZeDeploy logo */}
@@ -92,7 +113,7 @@ export default function Infrastructure() {
                   className="tile"
                 />
                 <image
-                  href="/zedeploy_logo.png"
+                  href="/zed-logo-preview.png"
                   x="95"
                   y="95"
                   width="110"

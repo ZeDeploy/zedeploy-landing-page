@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="footer">
       <Image
-        src="/zedeploy_logo.png"
+        src="/zed-logo-preview.png"
         alt="ZeDeploy logo"
         width={130}
         height={130}

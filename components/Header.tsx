@@ -9,8 +9,13 @@ const navLinks = [
   { href: "#contact-form", label: "Contact" },
 ];
 
+// The "Get Started" CTA scrolls to the contact form section
+// ("Get Started with ZeDeploy") instead of navigating elsewhere.
+const GET_STARTED_HREF = "#contact-form";
+
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isHashBg, setIsHashBg] = useState(true);
 
   // Close the menu with the Escape key
   useEffect(() => {
@@ -30,9 +35,9 @@ export default function Header() {
     };
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
-  }, []);  // Lock body scroll while the menu is open.
-  // NOTE: no padding-right compensation needed — `scrollbar-gutter: stable`
-  // on <html> reserves the scrollbar space, so nothing shifts horizontally.
+  }, []);
+
+  // Lock body scroll while the menu is open.
   useEffect(() => {
     if (!menuOpen) return;
     const originalOverflow = document.body.style.overflow;
@@ -42,9 +47,47 @@ export default function Header() {
     };
   }, [menuOpen]);
 
+  // Track whether the sticky navbar is scrolling over white-background sections
+  // (e.g. Services, Contact) or hash/colored sections (Hero, Infrastructure, Stats, CTA).
+  useEffect(() => {
+    const updateNavBackground = () => {
+      const headerEl = document.querySelector(".header-container");
+      const headerRect = headerEl?.getBoundingClientRect();
+      const probeY = headerRect ? headerRect.top + headerRect.height / 2 : 60;
+
+      const whiteSections = document.querySelectorAll(
+        ".services, .contact-section"
+      );
+
+      let onWhite = false;
+      for (const section of whiteSections) {
+        const rect = section.getBoundingClientRect();
+        if (rect.top <= probeY && rect.bottom > probeY) {
+          onWhite = true;
+          break;
+        }
+      }
+
+      setIsHashBg(!onWhite);
+    };
+
+    updateNavBackground();
+    window.addEventListener("scroll", updateNavBackground, { passive: true });
+    window.addEventListener("resize", updateNavBackground, { passive: true });
+
+    return () => {
+      window.removeEventListener("scroll", updateNavBackground);
+      window.removeEventListener("resize", updateNavBackground);
+    };
+  }, []);
+
   return (
     <header className="header">
-      <div className="header-container">
+      <div
+        className={`header-container ${
+          isHashBg ? "is-hash-bg" : "is-white-bg"
+        }`}
+      >
         <a
           href="#"
           className="logo"
@@ -52,7 +95,7 @@ export default function Header() {
           onClick={() => setMenuOpen(false)}
         >
           <Image
-            src="/zedeploy_logo.png"
+            src="/zed-logo-preview.png"
             alt="ZeDeploy logo"
             width={500}
             height={500}
@@ -66,7 +109,7 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-          <a href="#contact-form" className="start-button">
+          <a href={GET_STARTED_HREF} className="start-button">
             Get Started
           </a>
         </nav>
@@ -100,7 +143,7 @@ export default function Header() {
             </a>
           ))}
           <a
-            href="#contact-form"
+            href={GET_STARTED_HREF}
             className="start-button"
             onClick={() => setMenuOpen(false)}
           >
