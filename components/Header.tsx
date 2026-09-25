@@ -66,9 +66,9 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-          <button type="button" className="start-button">
+          <a href="#services" className="start-button">
             Get Started
-          </button>
+          </a>
         </nav>
 
         <button
@@ -99,9 +99,13 @@ export default function Header() {
               {link.label}
             </a>
           ))}
-          <button type="button" className="start-button">
+          <a
+            href="#services"
+            className="start-button"
+            onClick={() => setMenuOpen(false)}
+          >
             Get Started
-          </button>
+          </a>
         </nav>
       </div>
     </header>

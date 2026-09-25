@@ -17,6 +17,8 @@ html {
   /* Reserve the scrollbar gutter so locking scroll (mobile menu) never
      shifts the layout horizontally. */
   scrollbar-gutter: stable;
+  /* Smooth-scroll anchor links (e.g. Get Started → Our Services). */
+  scroll-behavior: smooth;
 }
 
 body {
@@ -123,6 +125,12 @@ nav a:hover {
   text-align: center;
   position: relative;
   overflow: hidden;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero::before {
@@ -138,6 +146,7 @@ nav a:hover {
 }
 
 .hero-container {
+  width: 100%;
   max-width: 900px;
   margin: 0 auto;
   position: relative;
@@ -150,7 +159,7 @@ nav a:hover {
   letter-spacing: 0.15em;
   margin-bottom: 1rem;
   text-transform: uppercase;
-  font-weight: 500;
+  font-weight: 700;
 }
 
 .hero h1 {
@@ -163,7 +172,7 @@ nav a:hover {
 
 .hero-highlight {
   font-size: clamp(2.2rem, 6vw, 3.5rem);
-  font-weight: 400;
+  font-weight: 700;
   color: rgba(255, 255, 255, 0.85);
   font-style: italic;
   margin-bottom: 1.5rem;
@@ -204,6 +213,12 @@ nav a:hover {
 .services {
   background: linear-gradient(90deg, var(--sage) 0%, var(--sage-dark) 100%);
   padding: 4rem 2rem;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .services .section-title {
@@ -211,6 +226,7 @@ nav a:hover {
 }
 
 .services-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -280,9 +296,16 @@ nav a:hover {
 .infrastructure {
   background: linear-gradient(90deg, var(--sage) 0%, var(--sage-dark) 100%);
   padding: 4rem 2rem;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .infrastructure-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -469,6 +492,12 @@ nav a:hover {
 .contact-section {
   background: linear-gradient(90deg, var(--sage) 0%, var(--sage-dark) 100%);
   padding: 4rem 2rem;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .contact-section .section-title {
@@ -476,6 +505,7 @@ nav a:hover {
 }
 
 .contact-container {
+  width: 100%;
   max-width: 800px;
   margin: 0 auto;
 }
@@ -571,9 +601,16 @@ nav a:hover {
   background: var(--ink);
   color: #ffffff;
   padding: 3rem 2rem;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .stats-container {
+  width: 100%;
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -602,9 +639,16 @@ nav a:hover {
   background: linear-gradient(90deg, var(--sage) 0%, var(--sage-dark) 100%);
   padding: 3rem 2rem;
   text-align: center;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .final-cta-container {
+  width: 100%;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -629,6 +673,13 @@ nav a:hover {
   padding: 2rem;
   text-align: center;
   font-size: 0.95rem;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .footer p {
