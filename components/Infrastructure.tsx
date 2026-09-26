@@ -37,6 +37,12 @@ export default function Infrastructure() {
               aria-label="ZeDeploy logo surrounded by animated infrastructure orbits"
             >
               <defs>
+                {/* Shared yellow gradient (#c4ba02) for tile stroke + gold nodes */}
+                <linearGradient id="zd-yellow-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stopColor="#e4dc3c" />
+                  <stop offset="45%" stopColor="#c4ba02" />
+                  <stop offset="100%" stopColor="#968e02" />
+                </linearGradient>
                 <clipPath id="zd-logo-clip">
                   <rect x="95" y="95" width="110" height="110" rx="24" />
                 </clipPath>
@@ -64,14 +70,15 @@ export default function Infrastructure() {
                 />
               </g>
 
-              {/* Orbiting infrastructure nodes — yellow balls and white balls rotate in a round;
-                  when balls collide, they reverse rotation direction. */}
-              {/* White ball orbit pair (outer dotted ring, radius = 132) */}
+              {/* Orbiting infrastructure nodes — yellow balls ride the white dotted ring,
+                  white balls ride the yellow dashed ring. When the yellow balls move upward
+                  the white balls move downward (and vice versa); each pair collides and reverses. */}
+              {/* White ball orbit pair (inner yellow dashed ring, radius = 118) */}
               <g className="orbit-white-cw">
                 <circle
                   className="node node-white node-white-cw"
                   cx="150"
-                  cy="18"
+                  cy="32"
                   r="4.5"
                 />
               </g>
@@ -79,17 +86,17 @@ export default function Infrastructure() {
                 <circle
                   className="node node-white node-white-ccw"
                   cx="150"
-                  cy="18"
+                  cy="32"
                   r="4.5"
                 />
               </g>
 
-              {/* Yellow (gold) ball orbit pair (inner dashed ring, radius = 118) */}
+              {/* Yellow (gold) ball orbit pair (outer white dotted ring, radius = 132) */}
               <g className="orbit-gold-cw">
                 <circle
                   className="node node-gold node-gold-cw"
                   cx="150"
-                  cy="32"
+                  cy="18"
                   r="6"
                 />
               </g>
@@ -97,7 +104,7 @@ export default function Infrastructure() {
                 <circle
                   className="node node-gold node-gold-ccw"
                   cx="150"
-                  cy="32"
+                  cy="18"
                   r="6"
                 />
               </g>
