@@ -6,8 +6,8 @@ export const metadata: Metadata = {
   description:
     "Enterprise-grade cloud infrastructure solutions for modern businesses. From deployment to optimization, we've got you covered.",
   icons: {
-    icon: "/zedeploy_logo.png",
-    apple: "/zedeploy_logo.png",
+    icon: "/zed-logo-preview.png",
+    apple: "/zed-logo-preview.png",
   },
 };
 

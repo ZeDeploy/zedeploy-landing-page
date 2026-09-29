@@ -2,17 +2,21 @@ export default function Hero() {
   return (
     <section className="hero">
       <div className="hero-container">
-        <p className="hero-subtitle">Cloud Infrastructure - Simplified</p>
-        <h1>Build, Monitor,</h1>
-        <p className="hero-highlight">Deploy with Confidence.</p>
+        <h1>Transform Your Business with Web &amp; AI Automation</h1>
         <p className="hero-description">
-          Enterprise-grade cloud infrastructure solutions for modern businesses.
-          From deployment to optimization, we&apos;ve got you covered.
+          We build professional websites, intelligent AI agents, and seamless
+          automation systems to save you time, multiply your sales, and run
+          your business 24/7.
         </p>
-        <button type="button" className="cta-button">
-          Sign Up
-        </button>
-    </div>
+        <div className="hero-actions">
+          <a href="#contact-form" className="cta-button">
+            Book Free Consultation
+          </a>
+          <a href="#services" className="cta-secondary">
+            Explore Services
+          </a>
+        </div>
+      </div>
     </section>
   );
 }

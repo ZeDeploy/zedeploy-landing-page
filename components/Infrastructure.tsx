@@ -10,8 +10,7 @@ const features = [
 ];
 
 export default function Infrastructure() {
-  return (
-    <section className="infrastructure" id="infrastructure">
+  return (    <section className="infrastructure" id="infrastructure">
       <div className="infrastructure-container">
         <div className="infra-content">
           <div className="infra-text">

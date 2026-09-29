@@ -45,8 +45,8 @@ html {
   scrollbar-gutter: stable;
   /* Smooth-scroll for in-page anchor links (nav, Get Started CTA). */
   scroll-behavior: smooth;
-  /* Keep anchor targets clear of the sticky header (~132px tall). */
-  scroll-padding-top: 132px;
+  /* Keep anchor targets clear of the sticky header (~110px tall). */
+  scroll-padding-top: 120px;
 }
 
 body {
@@ -64,45 +64,28 @@ a {
   color: inherit;
 }
 
-/* Header/Navigation */
+/* Header/Navigation — full-width white bar that sits inside the page
+   (in normal flow at the top). Sticky keeps it available on scroll
+   without floating over the hero. */
 .header {
-  background: transparent;
-  padding: 1.2rem 2rem;
+  background: #ffffff;
+  border-bottom: 1px solid rgba(44, 44, 44, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  padding: 0.8rem 2rem;
   position: sticky;
   top: 0;
   z-index: 100;
-  backdrop-filter: blur(10px);
 }
 
+/* The bar spans the full landing-page width; the 2rem side padding on
+   .header aligns its content with the page's section gutters. */
 .header-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: rgba(62, 79, 62, 0.55);
-  border: 1px solid rgba(46, 60, 46, 0.65);
-  border-radius: 50px;
-  padding: 0.8rem 2rem;
-  backdrop-filter: blur(10px);
-  transition: background 0.35s ease, border-color 0.35s ease,
-    box-shadow 0.35s ease;
-}
-
-/* Over hash/sage sections (Hero, Infrastructure, Stats, CTA): change to light hash color */
-.header-container.is-hash-bg {
-  background: rgba(220, 232, 220, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-  backdrop-filter: blur(14px);
-}
-
-/* Over white sections (Services, Contact): keep same background color */
-.header-container.is-white-bg {
-  background: rgba(52, 66, 52, 0.72);
-  border: 1px solid rgba(46, 60, 46, 0.75);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(12px);
+  background: #ffffff;
+  padding: 0.5rem 0;
 }
 
 .logo {
@@ -124,38 +107,21 @@ nav {
 }
 
 nav a {
-  color: #ffffff;
+  color: var(--ink);
   text-decoration: none;
   font-size: 0.9rem;
   transition: color 0.3s;
   font-weight: 500;
 }
 
-/* Gradient text for the nav menu links (Services, Infrastructure, Contact).
-   background-clip: text paints the glyph fill with the gradient.
-   The Get Started button (.start-button) keeps its own solid styling. */
-.desktop-nav a:not(.start-button),
-.mobile-menu nav a:not(.start-button) {
-  background: var(--yellow-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-  transition: filter 0.3s;
-}
-
-/* Hover: brighten + soft glow (color changes don't work on gradient text) */
-.desktop-nav a:not(.start-button):hover,
-.mobile-menu nav a:not(.start-button):hover {
-  filter: brightness(1.12) drop-shadow(0 0 6px rgba(196, 186, 2, 0.5));
-}
-
+/* Nav links: ink on the white bar, gold on hover.
+   The Get Started button (.start-button) keeps its own gradient styling. */
 nav a:hover:not(.start-button) {
   color: var(--gold);
 }
 
 .start-button {
-  background: var(--yellow-gradient);
+  background: #d4af37;
   color: var(--ink);
   padding: 0.6rem 1.5rem;
   border-radius: 50px;
@@ -190,6 +156,12 @@ nav a:hover:not(.start-button) {
   text-align: center;
   position: relative;
   overflow: hidden;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .hero::before {
@@ -217,29 +189,12 @@ nav a:hover:not(.start-button) {
   backdrop-filter: blur(10px);
 }
 
-.hero-subtitle {
-  font-size: 0.9rem;
-  color: rgba(255, 255, 255, 0.9);
-  letter-spacing: 0.15em;
-  margin-bottom: 1rem;
-  text-transform: uppercase;
-  font-weight: 700;
-}
-
 .hero h1 {
   font-size: clamp(2.2rem, 6vw, 3.5rem);
   font-weight: 700;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
   color: #ffffff;
-  line-height: 1.1;
-}
-
-.hero-highlight {
-  font-size: clamp(2.2rem, 6vw, 3.5rem);
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.85);
-  margin-bottom: 1.5rem;
-  letter-spacing: 0.02em;
+  line-height: 1.15;
 }
 
 .hero-description {
@@ -254,7 +209,7 @@ nav a:hover:not(.start-button) {
 
 .cta-button {
   display: inline-block;
-  background: var(--yellow-gradient);
+  background: #d4af37;
   color: var(--ink);
   padding: 0.9rem 2.2rem;
   border-radius: 50px;
@@ -270,6 +225,35 @@ nav a:hover:not(.start-button) {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(196, 186, 2, 0.45);
   filter: brightness(1.08);
+}
+
+/* Secondary hero CTA: outlined ghost button for the dark gradient background */
+.cta-secondary {
+  display: inline-block;
+  padding: 0.9rem 2.2rem;
+  border-radius: 50px;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.cta-secondary:hover {
+  border-color: var(--gold);
+  color: var(--gold-light);
+  transform: translateY(-2px);
+  background: rgba(196, 186, 2, 0.08);
+}
+
+/* Hero CTA row: primary + secondary side by side */
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
 /* Services Section */
@@ -360,6 +344,12 @@ nav a:hover:not(.start-button) {
 .infrastructure {
   background: var(--section-gradient);
   padding: 4rem 2rem;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .infrastructure-container {
@@ -780,7 +770,7 @@ nav a:hover:not(.start-button) {
 }
 
 .form-submit {
-  background: var(--yellow-gradient);
+  background: #d4af37;
   color: var(--ink);
   padding: 1rem 2rem;
   border: none;
@@ -816,11 +806,21 @@ nav a:hover:not(.start-button) {
   background: var(--ink);
   color: #ffffff;
   padding: 3rem 2rem;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
 }
 
 .stats-container {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .stats-grid {
@@ -833,21 +833,86 @@ nav a:hover:not(.start-button) {
 .stat-item h4 {
   font-size: 2.5rem;
   margin-bottom: 0.5rem;
-  background: var(--yellow-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: #dba102;
 }
 
 .stat-item p {
   font-size: 1rem;
-  background: var(--yellow-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+  color: #dba102;
   letter-spacing: 0.03em;
+}
+
+/* --- Growth chart background (Stats section) ------------------------
+   Decorative rising line with area fill and data points, anchored to
+   the bottom of the section. Purely presentational (aria-hidden). */
+.stats-growth-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.stats-growth-bg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The rising line draws itself once when the page loads */
+.stats-growth-line {
+  stroke-dasharray: 1600;
+  stroke-dashoffset: 1600;
+  animation: zd-growth-draw 2.4s ease-out 0.3s forwards;
+}
+
+@keyframes zd-growth-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Data points pop in as the line passes them (delays match the
+   2.4s draw across each point's horizontal position). */
+.stats-growth-dot {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: zd-growth-pop 0.45s ease-out forwards;
+}
+
+.stats-growth-dot:nth-of-type(1) { animation-delay: 0.6s; }
+.stats-growth-dot:nth-of-type(2) { animation-delay: 0.9s; }
+.stats-growth-dot:nth-of-type(3) { animation-delay: 1.2s; }
+.stats-growth-dot:nth-of-type(4) { animation-delay: 1.5s; }
+.stats-growth-dot:nth-of-type(5) { animation-delay: 1.8s; }
+.stats-growth-dot:nth-of-type(6) { animation-delay: 2.1s; }
+.stats-growth-dot:nth-of-type(7) { animation-delay: 2.4s; }
+.stats-growth-dot:nth-of-type(8) { animation-delay: 2.7s; }
+
+@keyframes zd-growth-pop {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stats-growth-line,
+  .stats-growth-dot {
+    animation: none;
+  }
+
+  .stats-growth-line {
+    stroke-dashoffset: 0;
+  }
+
+  .stats-growth-dot {
+    opacity: 1;
+  }
 }
 
 /* CTA Section */
@@ -855,6 +920,12 @@ nav a:hover:not(.start-button) {
   background: var(--section-gradient);
   padding: 3rem 2rem;
   text-align: center;
+  /* Full-screen section */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .final-cta-container {
@@ -897,11 +968,7 @@ nav a:hover:not(.start-button) {
 /* Responsive */
 @media (max-width: 768px) {
   .header {
-    padding: 0.8rem 1rem;
-  }
-
-  .header-container {
-    padding: 0.6rem 1.2rem;
+    padding: 0.6rem 1.25rem;
   }
 
   .desktop-nav {
@@ -922,22 +989,22 @@ nav a:hover:not(.start-button) {
     width: 42px;
     height: 42px;
     padding: 10px;
-    background: rgba(255, 255, 255, 0.12);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: transparent;
+    border: 1px solid rgba(44, 44, 44, 0.15);
     border-radius: 50%;
     cursor: pointer;
     transition: background 0.3s;
   }
 
   .hamburger:hover {
-    background: rgba(255, 255, 255, 0.22);
+    background: rgba(196, 186, 2, 0.12);
   }
 
   .hamburger span {
     display: block;
     width: 100%;
     height: 2px;
-    background: #ffffff;
+    background: var(--ink);
     border-radius: 2px;
     transition: transform 0.3s ease, opacity 0.3s ease;
   }
@@ -960,11 +1027,10 @@ nav a:hover:not(.start-button) {
     top: calc(100% + 0.5rem);
     left: 1rem;
     right: 1rem;
-    background: rgba(52, 66, 52, 0.97);
-    border: 1px solid rgba(196, 186, 2, 0.45);
+    background: #ffffff;
+    border: 1px solid rgba(44, 44, 44, 0.08);
     border-radius: 20px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
     overflow: hidden;
     max-height: 0;
     opacity: 0;
@@ -989,14 +1055,13 @@ nav a:hover:not(.start-button) {
   }
 
   .mobile-menu nav a {
-    color: #ffffff;
+    color: var(--ink);
     font-size: 1rem;
     padding: 0.65rem 0.5rem;
     border-radius: 10px;
   }
 
-  /* Mobile menu links use the shared gradient-text hover glow above;
-     a translucent pill background here would clash with background-clip: text. */
+  /* Mobile menu links turn gold on hover (see the shared nav a:hover rule). */
 
   .mobile-menu .start-button {
     margin-top: 0.75rem;
@@ -1018,6 +1083,16 @@ nav a:hover:not(.start-button) {
   .hero-container {
     padding: 2rem 1.25rem;
     border-radius: 16px;
+  }
+
+  /* Stack the hero CTAs full-width on small screens */
+  .hero-actions {
+    flex-direction: column;
+  }
+
+  .hero-actions .cta-button,
+  .hero-actions .cta-secondary {
+    width: 100%;
   }
 
   .services,
