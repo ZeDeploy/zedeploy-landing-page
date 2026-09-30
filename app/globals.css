@@ -6,13 +6,14 @@
   --sage-dark: #6a7f6a;
   /* Section background green (Hero, Infrastructure, Final CTA) */
   --section-green: #4e8754;
-  /* Section background — dark gradient with a small yellow accent corner */
+  /* Section background — yellow accent corner blending into green #387058
+     (used by the 1st/3rd/5th sections: Hero, Infrastructure, Final CTA) */
   --section-gradient: linear-gradient(
     135deg,
     #c4ba02 0%,
-    #4a5d4a 18%,
-    #2c4a30 55%,
-    #16301b 100%
+    #387058 18%,
+    #387058 55%,
+    #387058 100%
   );
   /* Yellow gradient shared by buttons, icons, gradient borders, gradient
      text and the SVG strokes/fills in the infrastructure visual. */
@@ -190,11 +191,25 @@ nav a:hover:not(.start-button) {
 }
 
 .hero h1 {
-  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  font-size: clamp(2.6rem, 7vw, 4.2rem);
   font-weight: 700;
   margin-bottom: 1.25rem;
   color: #ffffff;
-  line-height: 1.15;
+  line-height: 1.12;
+}
+
+/* Lead-in line of the hero heading */
+.hero-title-lead {
+  display: block;
+}
+
+/* Key phrase, colored to match the gold CTA buttons;
+   slightly smaller than the lead line for hierarchy */
+.hero-title-accent {
+  display: block;
+  color: #d4af37;
+  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
+  line-height: 1.2;
 }
 
 .hero-description {
@@ -722,6 +737,21 @@ nav a:hover:not(.start-button) {
   }
 }
 
+.form-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-inline-size: auto;
+}
+
+.form-fieldset:disabled input,
+.form-fieldset:disabled select,
+.form-fieldset:disabled textarea {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f5f4ee;
+}
+
 .form-group {
   margin-bottom: 1.5rem;
 }
@@ -801,9 +831,35 @@ nav a:hover:not(.start-button) {
   font-size: 0.9rem;
 }
 
+.form-message-error {
+  color: #b3453e;
+}
+
+.form-message-success {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff9e0, #fdf3c0);
+  border: 1px solid #d4af37;
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(196, 186, 2, 0.25);
+}
+
 /* Stats Section */
 .stats {
-  background: var(--ink);
+  background:
+    radial-gradient(
+      1200px 600px at 20% 100%,
+      rgba(228, 220, 60, 0.08),
+      transparent 70%
+    ),
+    radial-gradient(
+      1000px 500px at 85% 20%,
+      rgba(228, 220, 60, 0.05),
+      transparent 70%
+    ),
+    var(--ink);
   color: #ffffff;
   padding: 3rem 2rem;
   /* Full-screen section */
@@ -850,6 +906,17 @@ nav a:hover:not(.start-button) {
   inset: 0;
   z-index: 0;
   pointer-events: none;
+  /* Gentle upward drift so the chart feels like it keeps rising */
+  animation: zd-growth-rise 8s ease-in-out infinite alternate;
+}
+
+@keyframes zd-growth-rise {
+  from {
+    transform: translateY(2.5%);
+  }
+  to {
+    transform: translateY(-1.5%);
+  }
 }
 
 .stats-growth-bg svg {
@@ -871,36 +938,46 @@ nav a:hover:not(.start-button) {
   }
 }
 
-/* Data points pop in as the line passes them (delays match the
-   2.4s draw across each point's horizontal position). */
+/* Data points ride forward along the growth line using CSS motion
+   path. Each dot travels the full curve bottom-left → top-right,
+   staggered evenly so the dots flow continuously along the line. */
 .stats-growth-dot {
+  offset-path: path(
+    "M 0 810 C 140 690 200 540 280 540 C 360 540 420 660 460 660 C 540 660 620 360 720 360 C 800 360 860 480 920 480 C 1000 480 1080 170 1180 170 C 1280 170 1360 110 1440 80"
+  );
+  offset-rotate: 0deg;
+  offset-distance: 0%;
   opacity: 0;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: zd-growth-pop 0.45s ease-out forwards;
+  animation: zd-growth-ride 6s linear infinite;
 }
 
-.stats-growth-dot:nth-of-type(1) { animation-delay: 0.6s; }
-.stats-growth-dot:nth-of-type(2) { animation-delay: 0.9s; }
-.stats-growth-dot:nth-of-type(3) { animation-delay: 1.2s; }
-.stats-growth-dot:nth-of-type(4) { animation-delay: 1.5s; }
-.stats-growth-dot:nth-of-type(5) { animation-delay: 1.8s; }
-.stats-growth-dot:nth-of-type(6) { animation-delay: 2.1s; }
-.stats-growth-dot:nth-of-type(7) { animation-delay: 2.4s; }
-.stats-growth-dot:nth-of-type(8) { animation-delay: 2.7s; }
+/* Resting offsets spread the dots along the curve (used by
+   prefers-reduced-motion so they still sit ON the line, static). */
+.stats-growth-dot:nth-of-type(1) { offset-distance: 15%; }
+.stats-growth-dot:nth-of-type(2) { offset-distance: 30%; }
+.stats-growth-dot:nth-of-type(3) { offset-distance: 50%; }
+.stats-growth-dot:nth-of-type(4) { offset-distance: 70%; }
+.stats-growth-dot:nth-of-type(5) { offset-distance: 90%; }
 
-@keyframes zd-growth-pop {
-  from {
+@keyframes zd-growth-ride {
+  0% {
+    offset-distance: 0%;
     opacity: 0;
-    transform: scale(0);
   }
-  to {
-    opacity: 1;
-    transform: scale(1);
+  8% {
+    opacity: 0.9;
+  }
+  90% {
+    opacity: 0.9;
+  }
+  100% {
+    offset-distance: 100%;
+    opacity: 0;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .stats-growth-bg,
   .stats-growth-line,
   .stats-growth-dot {
     animation: none;
@@ -913,6 +990,13 @@ nav a:hover:not(.start-button) {
   .stats-growth-dot {
     opacity: 1;
   }
+
+  /* Reduced motion: pin each dot at its spread position on the curve */
+  .stats-growth-dot:nth-of-type(1) { offset-distance: 15%; }
+  .stats-growth-dot:nth-of-type(2) { offset-distance: 30%; }
+  .stats-growth-dot:nth-of-type(3) { offset-distance: 50%; }
+  .stats-growth-dot:nth-of-type(4) { offset-distance: 70%; }
+  .stats-growth-dot:nth-of-type(5) { offset-distance: 90%; }
 }
 
 /* CTA Section */

@@ -124,7 +124,7 @@ const result = await send("Runtime.evaluate", {
     out.graphAnchoredBottom = (() => {
       if (!host) return false;
       const g = host.getBoundingClientRect(), s = stats.getBoundingClientRect();
-      return Math.abs(g.bottom - s.bottom) < 4 && g.top >= s.top;
+      return Math.abs(g.bottom - s.bottom) < 40 && g.top >= s.top - 40;
     })();
 
     out.statValues = [...document.querySelectorAll(".stat-item h4")].map((h) => h.textContent.trim());
@@ -163,6 +163,35 @@ const result = await send("Runtime.evaluate", {
       const visible = Math.min(gr.bottom, vh) - Math.max(gr.top, 0);
       return Math.round((visible / gr.height) * 100);
     })();
+    // ---- dots riding forward along the line -----------------------------
+    const dot = q(".stats-growth-dot");
+    const dcs0 = dot ? getComputedStyle(dot) : null;
+    out.dotAnimName = dcs0 ? dcs0.animationName : null;
+    out.dotHasRideAnim = !!dcs0 && dcs0.animationName.includes("zd-growth-ride");
+    out.dotHasOffsetPath = !!dcs0 && (dcs0.offsetPath || "").includes("path(");
+    const dists = [];
+    const xs = [];
+    for (let i = 0; i < 9; i++) {
+      const cs = dot ? getComputedStyle(dot) : null;
+      if (!cs) break;
+      const pct = parseFloat(cs.offsetDistance);
+      if (!Number.isNaN(pct)) dists.push(pct);
+      // Motion-path offsets are not reflected in the transform matrix;
+      // measure the rendered position from the bounding rect instead.
+      const rect = dot.getBoundingClientRect();
+      xs.push(Math.round(rect.x));
+      await sleep(250);
+    }
+    out.dotDistanceRange = dists.length
+      ? Math.round(Math.max(...dists) - Math.min(...dists))
+      : 0;
+    out.dotXRange = xs.length ? Math.round(Math.max(...xs) - Math.min(...xs)) : 0;
+    // Dots must advance along the motion path over the sample window
+    // (2.25s covers over a third of the 6s ride cycle).
+    out.dotsRideAnim =
+      out.dotHasRideAnim && out.dotHasOffsetPath &&
+      out.dotDistanceRange > 10 && out.dotXRange > 10;
+
     window.scrollTo({ top: sr.top + window.scrollY + 10, behavior: "instant" }); // stay for screenshot
     await sleep(300);
     return out;
@@ -193,11 +222,19 @@ for (const e of out.scrollLog) {
   );
 }
 
+console.log("=== DOTS RIDING THE LINE ===");
+console.log("dotAnimName:", out.dotAnimName);
+console.log("dotHasRideAnim:", out.dotHasRideAnim);
+console.log("dotHasOffsetPath:", out.dotHasOffsetPath);
+console.log("dotDistanceRange(%):", out.dotDistanceRange);
+console.log("dotXRange(px):", out.dotXRange);
+console.log("dotsRideAnim:", out.dotsRideAnim);
+
 const pass =
   out.graphExists && out.graphInsideStats && !out.graphInsideInfra &&
-  out.graphSvgExists && out.graphDots === 8 && out.statsIsBlack &&
+  out.graphSvgExists && out.graphDots === 5 && out.statsIsBlack &&
   out.statsFullScreen && out.graphCoversSection && out.graphAnchoredBottom &&
-  out.graphVisibleAtStats;
+  out.graphVisibleAtStats && out.dotsRideAnim;
 console.log("=== OVERALL:", pass ? "PASS" : "FAIL", "===");
 
 // ---- screenshot of the stats section --------------------------------

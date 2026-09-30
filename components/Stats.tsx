@@ -17,7 +17,8 @@ export default function Stats() {
         >
           <defs>
             <linearGradient id="zd-growth-fill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#e4dc3c" stopOpacity="0.14" />
+              <stop offset="0%" stopColor="#e4dc3c" stopOpacity="0.28" />
+              <stop offset="60%" stopColor="#e4dc3c" stopOpacity="0.1" />
               <stop offset="100%" stopColor="#e4dc3c" stopOpacity="0" />
             </linearGradient>
             <linearGradient id="zd-growth-stroke" x1="0" y1="0" x2="1" y2="0">
@@ -26,31 +27,28 @@ export default function Stats() {
             </linearGradient>
           </defs>
 
-          {/* Rising area under the growth curve */}
+          {/* Rising area under the growth curve (3 peaks, trending upward) */}
           <path
-            d="M 0 860 L 120 830 L 280 800 L 420 750 L 560 700 L 720 610 L 900 520 L 1100 380 L 1280 220 L 1440 90 L 1440 900 L 0 900 Z"
+            d="M 0 810 C 140 690 200 540 280 540 C 360 540 420 660 460 660 C 540 660 620 360 720 360 C 800 360 860 480 920 480 C 1000 480 1080 170 1180 170 C 1280 170 1360 110 1440 80 L 1440 900 L 0 900 Z"
             fill="url(#zd-growth-fill)"
           />
 
-          {/* Rising growth line (draws itself on load) */}
+          {/* Rising growth line with peaks (draws itself on load) */}
           <path
             className="stats-growth-line"
-            d="M 0 860 L 120 830 L 280 800 L 420 750 L 560 700 L 720 610 L 900 520 L 1100 380 L 1280 220 L 1440 90"
+            d="M 0 810 C 140 690 200 540 280 540 C 360 540 420 660 460 660 C 540 660 620 360 720 360 C 800 360 860 480 920 480 C 1000 480 1080 170 1180 170 C 1280 170 1360 110 1440 80"
             fill="none"
             stroke="url(#zd-growth-stroke)"
             strokeWidth="2.5"
           />
 
-          {/* Data points pop in as the line passes them */}
+          {/* Data points ride forward along the growth line */}
           <g fill="#e4dc3c" opacity="0.85">
-            <circle className="stats-growth-dot" cx="120" cy="830" r="4" />
-            <circle className="stats-growth-dot" cx="280" cy="800" r="4" />
-            <circle className="stats-growth-dot" cx="420" cy="750" r="4" />
-            <circle className="stats-growth-dot" cx="560" cy="700" r="4" />
-            <circle className="stats-growth-dot" cx="720" cy="610" r="4" />
-            <circle className="stats-growth-dot" cx="900" cy="520" r="4" />
-            <circle className="stats-growth-dot" cx="1100" cy="380" r="4" />
-            <circle className="stats-growth-dot" cx="1280" cy="220" r="4" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="5" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="4" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="5" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="4" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="5" />
           </g>
         </svg>
       </div>

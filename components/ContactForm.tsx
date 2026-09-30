@@ -3,6 +3,9 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 
+// Formspree endpoint that receives contact-form submissions
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mdekbbkb";
+
 const industries = [
   "technology",
   "finance",
@@ -15,18 +18,28 @@ const industries = [
 export default function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
+  const [error, setError] = useState(false);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setSending(true);
-    const formData = new FormData(event.currentTarget);
-    console.log("Form submitted:", Object.fromEntries(formData));
-    // Simulate an async submission
-    await new Promise((resolve) => setTimeout(resolve, 400));
-    setSending(false);
-    setSubmitted(true);
-    event.currentTarget.reset();
-    setTimeout(() => setSubmitted(false), 2000);
+    setError(false);
+    try {
+      const response = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(form),
+      });
+      if (!response.ok) {
+        throw new Error(`Submission failed (${response.status})`);
+      }
+      setSubmitted(true);
+    } catch {
+      setError(true);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -35,6 +48,7 @@ export default function ContactForm() {
         <h2 className="section-title">Get Started with ZeDeploy</h2>
         <div className="form-wrapper">
           <form onSubmit={handleSubmit}>
+            <fieldset className="form-fieldset" disabled={submitted}>
             <div className="form-row">
               <div className="form-group">
                 <label htmlFor="firstName">First Name</label>
@@ -87,12 +101,21 @@ export default function ContactForm() {
               className="form-submit"
               disabled={sending || submitted}
             >
-              {submitted ? "✓ Sign Up Successful!" : "Sign Up Now"}
+              {submitted ? "✓ Submitted Successfully!" : "Sign Up Now"}
             </button>
-            <p className="form-message">
-              We&apos;ll get back to you within 24 hours with a personalized
-              proposal.
-            </p>
+            {error && (
+              <p className="form-message form-message-error">
+                Something went wrong sending your message. Please try again in
+                a moment.
+              </p>
+            )}
+            {submitted && (
+              <p className="form-message form-message-success">
+                We&apos;ll get back to you within 24 hours with a personalized
+                proposal.
+              </p>
+            )}
+            </fieldset>
           </form>
         </div>
       </div>

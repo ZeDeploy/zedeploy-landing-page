@@ -2,7 +2,10 @@ export default function Hero() {
   return (
     <section className="hero">
       <div className="hero-container">
-        <h1>Transform Your Business with Web &amp; AI Automation</h1>
+        <h1>
+          <span className="hero-title-lead">Transform Your Business with</span>{" "}
+          <span className="hero-title-accent">Web &amp; AI Automation</span>
+        </h1>
         <p className="hero-description">
           We build professional websites, intelligent AI agents, and seamless
           automation systems to save you time, multiply your sales, and run
