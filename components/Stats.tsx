@@ -49,6 +49,9 @@ export default function Stats() {
             <circle className="stats-growth-dot" cx="0" cy="0" r="5" />
             <circle className="stats-growth-dot" cx="0" cy="0" r="4" />
             <circle className="stats-growth-dot" cx="0" cy="0" r="5" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="4" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="5" />
+            <circle className="stats-growth-dot" cx="0" cy="0" r="4" />
           </g>
         </svg>
       </div>

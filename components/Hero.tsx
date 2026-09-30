@@ -3,8 +3,8 @@ export default function Hero() {
     <section className="hero">
       <div className="hero-container">
         <h1>
-          <span className="hero-title-lead">Transform Your Business with</span>{" "}
-          <span className="hero-title-accent">Web &amp; AI Automation</span>
+          Transform Your Business with{" "}
+          <span className="hero-highlight">Web &amp; AI Automation</span>
         </h1>
         <p className="hero-description">
           We build professional websites, intelligent AI agents, and seamless

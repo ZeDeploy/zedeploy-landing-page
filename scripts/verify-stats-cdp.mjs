@@ -232,7 +232,7 @@ console.log("dotsRideAnim:", out.dotsRideAnim);
 
 const pass =
   out.graphExists && out.graphInsideStats && !out.graphInsideInfra &&
-  out.graphSvgExists && out.graphDots === 5 && out.statsIsBlack &&
+  out.graphSvgExists && out.graphDots === 8 && out.statsIsBlack &&
   out.statsFullScreen && out.graphCoversSection && out.graphAnchoredBottom &&
   out.graphVisibleAtStats && out.dotsRideAnim;
 console.log("=== OVERALL:", pass ? "PASS" : "FAIL", "===");

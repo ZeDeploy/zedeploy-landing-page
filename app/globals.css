@@ -177,39 +177,33 @@ nav a:hover:not(.start-button) {
   pointer-events: none;
 }
 
+/* Wide card so the h1 headline fits on a single line */
 .hero-container {
-  max-width: 900px;
+  max-width: 1360px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
   background: rgba(255, 255, 255, 0.12);
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 20px;
-  padding: 3rem 2.5rem;
+  padding: 3rem 2rem;
   box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15);
   backdrop-filter: blur(10px);
 }
 
 .hero h1 {
-  font-size: clamp(2.6rem, 7vw, 4.2rem);
+  /* Sized so "Transform Your Business with Web & AI Automation"
+     stays on one line inside the wide card (fits from ~900px up) */
+  font-size: clamp(2rem, 3.4vw, 3.1rem);
   font-weight: 700;
   margin-bottom: 1.25rem;
   color: #ffffff;
-  line-height: 1.12;
+  line-height: 1.15;
 }
 
-/* Lead-in line of the hero heading */
-.hero-title-lead {
-  display: block;
-}
-
-/* Key phrase, colored to match the gold CTA buttons;
-   slightly smaller than the lead line for hierarchy */
-.hero-title-accent {
-  display: block;
+/* Same gold as .cta-button so the highlight matches the buttons */
+.hero-highlight {
   color: #d4af37;
-  font-size: clamp(1.8rem, 4.5vw, 2.8rem);
-  line-height: 1.2;
 }
 
 .hero-description {
@@ -948,26 +942,63 @@ nav a:hover:not(.start-button) {
   offset-rotate: 0deg;
   offset-distance: 0%;
   opacity: 0;
-  animation: zd-growth-ride 6s linear infinite;
+  animation: zd-growth-ride-a 40s linear infinite;
 }
 
-/* Resting offsets spread the dots along the curve (used by
-   prefers-reduced-motion so they still sit ON the line, static). */
-.stats-growth-dot:nth-of-type(1) { offset-distance: 15%; }
-.stats-growth-dot:nth-of-type(2) { offset-distance: 30%; }
-.stats-growth-dot:nth-of-type(3) { offset-distance: 50%; }
-.stats-growth-dot:nth-of-type(4) { offset-distance: 70%; }
-.stats-growth-dot:nth-of-type(5) { offset-distance: 90%; }
+/* Relay teams: dots 1-4 ride during the first half of the 40s loop,
+   dots 5-8 during the second half — so only FOUR circles move at a
+   time, each taking 20s to cross the curve. Positive 3s delays
+   stagger the riders (≈15% of the path apart — clear gaps) and make
+   the baton-pass exact: each rider exits just as the next team's
+   rider enters, keeping the count at four at all times. */
+.stats-growth-dot:nth-of-type(-n+4) { animation-name: zd-growth-ride-a; }
+.stats-growth-dot:nth-of-type(n+5) { animation-name: zd-growth-ride-b; }
+.stats-growth-dot:nth-of-type(1) { animation-delay: 0s; }
+.stats-growth-dot:nth-of-type(2) { animation-delay: 3s; }
+.stats-growth-dot:nth-of-type(3) { animation-delay: 6s; }
+.stats-growth-dot:nth-of-type(4) { animation-delay: 9s; }
+.stats-growth-dot:nth-of-type(5) { animation-delay: 0s; }
+.stats-growth-dot:nth-of-type(6) { animation-delay: 3s; }
+.stats-growth-dot:nth-of-type(7) { animation-delay: 6s; }
+.stats-growth-dot:nth-of-type(8) { animation-delay: 9s; }
 
-@keyframes zd-growth-ride {
+/* Team A: rides the curve during the first half of the loop, then
+   parks invisible while team B takes over. */
+@keyframes zd-growth-ride-a {
   0% {
     offset-distance: 0%;
     opacity: 0;
   }
-  8% {
+  2% {
     opacity: 0.9;
   }
-  90% {
+  47% {
+    opacity: 0.9;
+  }
+  50% {
+    offset-distance: 100%;
+    opacity: 0;
+  }
+  100% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+}
+
+/* Team B: waits during the first half, rides during the second half. */
+@keyframes zd-growth-ride-b {
+  0% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  50% {
+    offset-distance: 0%;
+    opacity: 0;
+  }
+  52% {
+    opacity: 0.9;
+  }
+  97% {
     opacity: 0.9;
   }
   100% {
@@ -992,11 +1023,14 @@ nav a:hover:not(.start-button) {
   }
 
   /* Reduced motion: pin each dot at its spread position on the curve */
-  .stats-growth-dot:nth-of-type(1) { offset-distance: 15%; }
-  .stats-growth-dot:nth-of-type(2) { offset-distance: 30%; }
-  .stats-growth-dot:nth-of-type(3) { offset-distance: 50%; }
-  .stats-growth-dot:nth-of-type(4) { offset-distance: 70%; }
-  .stats-growth-dot:nth-of-type(5) { offset-distance: 90%; }
+  .stats-growth-dot:nth-of-type(1) { offset-distance: 10%; }
+  .stats-growth-dot:nth-of-type(2) { offset-distance: 22%; }
+  .stats-growth-dot:nth-of-type(3) { offset-distance: 34%; }
+  .stats-growth-dot:nth-of-type(4) { offset-distance: 46%; }
+  .stats-growth-dot:nth-of-type(5) { offset-distance: 58%; }
+  .stats-growth-dot:nth-of-type(6) { offset-distance: 70%; }
+  .stats-growth-dot:nth-of-type(7) { offset-distance: 82%; }
+  .stats-growth-dot:nth-of-type(8) { offset-distance: 94%; }
 }
 
 /* CTA Section */
