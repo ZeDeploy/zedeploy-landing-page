@@ -1,3 +1,8 @@
+"use client";
+
+import Reveal from "./Reveal";
+import CountUp from "./CountUp";
+
 const stats = [
   { value: "500+", label: "Deployments per day" },
   { value: "99.99%", label: "Uptime guarantee" },
@@ -58,11 +63,15 @@ export default function Stats() {
 
       <div className="stats-container">
         <div className="stats-grid">
-          {stats.map((stat) => (
-            <div key={stat.label} className="stat-item">
-              <h4>{stat.value}</h4>
-              <p>{stat.label}</p>
-            </div>
+          {stats.map((stat, index) => (
+            <Reveal key={stat.label} delay={index * 130}>
+              <div className="stat-item">
+                <h4>
+                  <CountUp value={stat.value} />
+                </h4>
+                <p>{stat.label}</p>
+              </div>
+            </Reveal>
           ))}
         </div>
       </div>

@@ -1,3 +1,7 @@
+"use client";
+
+import Reveal from "./Reveal";
+
 const services = [
   {
     icon: "📊",
@@ -41,15 +45,19 @@ export default function Services() {
   return (
     <section className="services" id="services">
       <div className="services-container">
-        <h2 className="section-title">Our Services</h2>
+        <Reveal>
+          <h2 className="section-title">Our Services</h2>
+        </Reveal>
         <div className="services-grid">
-          {services.map((service) => (
-            <div key={service.title} className="service-card">
-              <div className="service-icon">{service.icon}</div>
-              <h3>{service.title}</h3>
-              <p>{service.description}</p>
-            </div>
-  ))}
+          {services.map((service, index) => (
+            <Reveal key={service.title} from="scale" delay={index * 90}>
+              <div className="service-card">
+                <div className="service-icon">{service.icon}</div>
+                <h3>{service.title}</h3>
+                <p>{service.description}</p>
+              </div>
+            </Reveal>
+          ))}
         </div>
       </div>
     </section>

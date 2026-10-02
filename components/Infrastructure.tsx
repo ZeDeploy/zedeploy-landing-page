@@ -1,3 +1,7 @@
+"use client";
+
+import Reveal from "./Reveal";
+
 const features = [
   "24/7 Expert Support",
   "99.99% Uptime Guarantee",
@@ -12,6 +16,7 @@ const features = [
 export default function Infrastructure() {
   return (    <section className="infrastructure" id="infrastructure">
       <div className="infrastructure-container">
+        <Reveal>
         <div className="infra-content">
           <div className="infra-text">
             <h2>Why Choose ZeDeploy?</h2>
@@ -131,6 +136,7 @@ export default function Infrastructure() {
             </svg>
           </div>
         </div>
+        </Reveal>
       </div>
     </section>
   );

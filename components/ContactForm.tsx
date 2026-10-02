@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
+import Reveal from "./Reveal";
 
 // Formspree endpoint that receives contact-form submissions
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mdekbbkb";
@@ -45,8 +46,11 @@ export default function ContactForm() {
   return (
     <section className="contact-section" id="contact-form">
       <div className="contact-container">
-        <h2 className="section-title">Get Started with ZeDeploy</h2>
-        <div className="form-wrapper">
+        <Reveal>
+          <h2 className="section-title">Get Started with ZeDeploy</h2>
+        </Reveal>
+        <Reveal from="scale" delay={120}>
+          <div className="form-wrapper">
           <form onSubmit={handleSubmit}>
             <fieldset className="form-fieldset" disabled={submitted}>
             <div className="form-row">
@@ -117,7 +121,8 @@ export default function ContactForm() {
             )}
             </fieldset>
           </form>
-        </div>
+          </div>
+        </Reveal>
       </div>
     </section>
   );
