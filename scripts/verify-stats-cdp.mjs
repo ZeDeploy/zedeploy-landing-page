@@ -163,7 +163,53 @@ const result = await send("Runtime.evaluate", {
       const visible = Math.min(gr.bottom, vh) - Math.max(gr.top, 0);
       return Math.round((visible / gr.height) * 100);
     })();
+    // ---- hero: three-line headline, big lead + smaller gold accent -------
+    window.scrollTo({ top: 0, behavior: "instant" });
+    await sleep(300);
+    const h1 = q(".hero h1");
+    const hl = q(".hero-highlight");
+    const lead = q(".hero-title-main");
+    const withEl = q(".hero-title-line"); // first small line = the "with" connector
+    out.heroH1Exists = !!h1;
+    out.heroLeadText = lead ? lead.textContent.trim() : null;
+    const h1h = h1 ? h1.getBoundingClientRect().height : 0;
+    out.heroH1Height = Math.round(h1h);
+    // Three lines of mixed sizes at 1440x900 ≈ (60+37+37)*1.15 ≈ 156px;
+    // accept the three-line band (two lines < 120, four > 240).
+    out.heroThreeLines = h1h >= 120 && h1h <= 240;
+    out.heroHighlightGold = hl
+      ? getComputedStyle(hl).color === "rgb(212, 175, 55)"
+      : false;
+    out.heroFontLarge = lead
+      ? parseFloat(getComputedStyle(lead).fontSize) >= 60
+      : false;
+    // "with" line must render smaller than the lead line
+    out.heroWithSmaller = (() => {
+      if (!lead || !withEl) return false;
+      return (
+        parseFloat(getComputedStyle(withEl).fontSize) <
+        parseFloat(getComputedStyle(lead).fontSize) * 0.8
+      );
+    })();
+    // Accent line must also render smaller than the lead line
+    out.heroAccentSmaller = (() => {
+      if (!lead || !hl) return false;
+      return (
+        parseFloat(getComputedStyle(hl).fontSize) <
+        parseFloat(getComputedStyle(lead).fontSize) * 0.9
+      );
+    })();
+    out.heroCardWide = (() => {
+      const c = q(".hero-container");
+      if (!c) return false;
+      const r = c.getBoundingClientRect();
+      return r.width > window.innerWidth * 0.85;
+    })();
+
     // ---- dots riding forward along the line -----------------------------
+    // Relay design: 8 dots, two teams of four, 40s loop (20s crossing).
+    // Positive delays mean some riders have NOT started at t=0; sample a
+    // window that lands inside team A's active ride (2-18s after load).
     const dot = q(".stats-growth-dot");
     const dcs0 = dot ? getComputedStyle(dot) : null;
     out.dotAnimName = dcs0 ? dcs0.animationName : null;
@@ -186,11 +232,12 @@ const result = await send("Runtime.evaluate", {
       ? Math.round(Math.max(...dists) - Math.min(...dists))
       : 0;
     out.dotXRange = xs.length ? Math.round(Math.max(...xs) - Math.min(...xs)) : 0;
-    // Dots must advance along the motion path over the sample window
-    // (2.25s covers over a third of the 6s ride cycle).
+    // Dots must advance along the motion path over the sample window.
+    // 2.25s of a 20s crossing covers ~11% of the path; 4% allows for
+    // sampling jitter and the eased entry.
     out.dotsRideAnim =
       out.dotHasRideAnim && out.dotHasOffsetPath &&
-      out.dotDistanceRange > 10 && out.dotXRange > 10;
+      out.dotDistanceRange > 4 && out.dotXRange > 60;
 
     window.scrollTo({ top: sr.top + window.scrollY + 10, behavior: "instant" }); // stay for screenshot
     await sleep(300);
@@ -222,6 +269,16 @@ for (const e of out.scrollLog) {
   );
 }
 
+console.log("=== HERO ===");
+console.log("heroH1Exists:", out.heroH1Exists);
+console.log("heroLeadText:", out.heroLeadText);
+console.log("heroH1Height(px):", out.heroH1Height);
+console.log("heroThreeLines:", out.heroThreeLines);
+console.log("heroFontLarge:", out.heroFontLarge);
+console.log("heroWithSmaller:", out.heroWithSmaller);
+console.log("heroAccentSmaller:", out.heroAccentSmaller);
+console.log("heroHighlightGold:", out.heroHighlightGold);
+console.log("heroCardWide:", out.heroCardWide);
 console.log("=== DOTS RIDING THE LINE ===");
 console.log("dotAnimName:", out.dotAnimName);
 console.log("dotHasRideAnim:", out.dotHasRideAnim);
@@ -234,7 +291,10 @@ const pass =
   out.graphExists && out.graphInsideStats && !out.graphInsideInfra &&
   out.graphSvgExists && out.graphDots === 8 && out.statsIsBlack &&
   out.statsFullScreen && out.graphCoversSection && out.graphAnchoredBottom &&
-  out.graphVisibleAtStats && out.dotsRideAnim;
+  out.graphVisibleAtStats && out.dotsRideAnim &&
+  out.heroH1Exists && out.heroThreeLines && out.heroFontLarge &&
+  out.heroWithSmaller && out.heroAccentSmaller &&
+  out.heroHighlightGold && out.heroCardWide;
 console.log("=== OVERALL:", pass ? "PASS" : "FAIL", "===");
 
 // ---- screenshot of the stats section --------------------------------

@@ -52,6 +52,15 @@ export default function Hero() {
         ))}
       </div>
 
+      {/* Soft glowing orbs behind the glass card — the card's backdrop
+           blur diffuses them, which is what makes the frosted glass read
+           as real glass (purely decorative) */}
+      <div className="hero-glass-orbs" aria-hidden="true">
+        <span className="orb orb-gold" />
+        <span className="orb orb-green" />
+        <span className="orb orb-white" />
+      </div>
+
       <div className="hero-container">
         <h1>
           <span className="hero-title-main hero-anim hero-anim-1">
