@@ -57,7 +57,7 @@ function PinIcon() {
 
 export default function Contact() {
   return (
-    <section className="contact-section" id="contact-form">
+    <section className="contact-section" id="contact-info">
       <div className="contact-container">
         <Reveal>
           <p className="contact-kicker">Get In Touch</p>

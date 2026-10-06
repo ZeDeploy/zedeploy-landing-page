@@ -27,6 +27,13 @@
   --muted: #666666;
 }
 
+/* Registered so the border-glow angle can animate smoothly */
+@property --glow-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -111,10 +118,38 @@ nav a {
   font-weight: 500;
 }
 
-/* Nav links: ink on the white bar, gold on hover.
-   The Get Started button (.start-button) keeps its own gradient styling. */
-nav a:hover:not(.start-button) {
+/* Nav link hover: a gold underline sweeps in from the left and sweeps
+   out to the right when the cursor leaves (via the transform-origin
+   swap), with a subtle lift. The Get Started button keeps its own
+   styling and is excluded. */
+nav a:not(.start-button) {
+  position: relative;
+  padding-bottom: 4px;
+  transition: color 0.5s, transform 0.5s;
+}
+
+nav a:not(.start-button)::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--yellow-gradient);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+nav a:not(.start-button):hover {
   color: var(--gold);
+  transform: translateY(-2px);
+}
+
+nav a:not(.start-button):hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
 }
 
 .start-button {
@@ -254,30 +289,6 @@ nav a:hover:not(.start-button) {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(196, 186, 2, 0.45);
   filter: brightness(1.08);
-}
-
-/* Secondary hero CTA: frosted glass pill for the dark gradient background */
-.cta-secondary {
-  display: inline-block;
-  padding: 0.9rem 2.2rem;
-  border-radius: 50px;
-  border: 1.5px solid rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: all 0.3s;
-}
-
-.cta-secondary:hover {
-  border-color: var(--gold);
-  color: var(--gold-light);
-  transform: translateY(-2px);
-  background: rgba(196, 186, 2, 0.08);
 }
 
 /* Hero CTA row: primary + secondary side by side */
@@ -684,6 +695,9 @@ nav a:hover:not(.start-button) {
   padding-left: 1.8rem;
   position: relative;
   color: #ffffff;
+  /* Shrink to the text so the hover underline stops at the label */
+  width: fit-content;
+  transition: transform 0.5s;
 }
 
 .feature-list li:before {
@@ -693,6 +707,37 @@ nav a:hover:not(.start-button) {
   color: #ffffff;
   font-weight: bold;
   font-size: 1.2rem;
+  transition: color 0.5s;
+}
+
+/* Feature hover: the same directional gold underline sweep as the nav —
+   sweeps in from the left on enter, out to the right on leave — plus a
+   gold checkmark and a slight forward nudge. */
+.feature-list li::after {
+  content: "";
+  position: absolute;
+  left: 1.8rem;
+  right: 0;
+  bottom: 0.35rem;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--yellow-gradient);
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.feature-list li:hover {
+  transform: translateX(4px);
+}
+
+.feature-list li:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.feature-list li:hover:before {
+  color: var(--gold-light);
 }
 
 .infra-visual {
@@ -964,6 +1009,12 @@ nav a:hover:not(.start-button) {
   padding: 4rem 2rem;
 }
 
+/* The contact-form section's own backdrop: light grey so the green
+   card stands apart from the white Get In Touch section above it. */
+.contact-form-section {
+  background: #f0f0f0;
+}
+
 .contact-container {
   max-width: 1100px;
   margin: 0 auto;
@@ -1068,6 +1119,169 @@ nav a:hover:not(.start-button) {
 
 .contact-card-value a:hover {
   color: var(--gold);
+}
+
+/* Contact form — deep-green card with yellow gradient border and a
+   traveling flashlight beam. Its own section, right after Get In Touch. */
+.form-wrapper {
+  position: relative;
+  border-radius: 12px;
+  padding: 2.5rem;
+  /* Green fill inside, yellow gradient on the border box */
+  border: 2px solid transparent;
+  background:
+    linear-gradient(#387058, #387058) padding-box,
+    var(--yellow-gradient) border-box;
+  box-shadow: 0 0 20px rgba(196, 186, 2, 0.35),
+    0 12px 40px rgba(0, 0, 0, 0.08);
+  text-align: left;
+}
+
+/* Flashlight: a light beam that travels around just inside the border */
+.form-wrapper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 3px;
+  background: conic-gradient(
+    from var(--glow-angle),
+    transparent 0deg,
+    transparent 280deg,
+    rgba(196, 186, 2, 0.4) 310deg,
+    var(--gold-light) 335deg,
+    #fffbe9 350deg,
+    transparent 360deg
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: zd-border-glow 5s linear infinite;
+}
+
+@keyframes zd-border-glow {
+  to {
+    --glow-angle: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form-wrapper::before {
+    animation: none;
+    --glow-angle: 140deg;
+  }
+}
+
+.form-fieldset {
+  border: none;
+  margin: 0;
+  padding: 0;
+  min-inline-size: auto;
+}
+
+.form-fieldset:disabled input,
+.form-fieldset:disabled select,
+.form-fieldset:disabled textarea {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: #f5f4ee;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #ffffff;
+  font-size: 0.95rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(196, 186, 2, 0.35);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 120px;
+}
+
+.form-group.full {
+  grid-column: 1 / -1;
+}
+
+.form-submit {
+  background: #d4af37;
+  color: var(--ink);
+  padding: 1rem 2rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  width: 100%;
+}
+
+.form-submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196, 186, 2, 0.45);
+}
+
+.form-submit:disabled {
+  opacity: 0.85;
+  cursor: default;
+  transform: none;
+  box-shadow: none;
+}
+
+.form-message {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 1rem;
+  font-size: 0.9rem;
+}
+
+.form-message-error {
+  color: #ffd6d3;
+}
+
+.form-message-success {
+  margin-top: 1.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #fff9e0, #fdf3c0);
+  border: 1px solid #d4af37;
+  color: var(--ink);
+  font-weight: 600;
+  box-shadow: 0 4px 14px rgba(196, 186, 2, 0.25);
 }
 
 /* Stats Section */
@@ -1313,6 +1527,95 @@ nav a:hover:not(.start-button) {
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
 }
 
+/* Social icon row: glassy circles that turn gold on hover */
+.footer-socials {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.25rem;
+}
+
+.footer-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transition: all 0.3s;
+}
+
+.footer-social-link svg {
+  width: 20px;
+  height: 20px;
+}
+
+.footer-social-link:hover {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: var(--ink);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(196, 186, 2, 0.45);
+}
+
+/* --- Floating WhatsApp chat button ---------------------------------------
+   Pinned to the bottom-right of the viewport. Appears once the visitor
+   scrolls and hides itself while the footer is on screen (the footer
+   already carries a WhatsApp icon). */
+.whatsapp-float {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 90;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #25d366;
+  color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+  opacity: 0;
+  transform: translateY(16px) scale(0.85);
+  pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.whatsapp-float.is-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.whatsapp-float:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 28px rgba(37, 211, 102, 0.45);
+}
+
+.whatsapp-float svg {
+  width: 30px;
+  height: 30px;
+}
+
+@media (max-width: 768px) {
+  .whatsapp-float {
+    width: 48px;
+    height: 48px;
+    right: 1rem;
+    bottom: 1rem;
+  }
+
+  .whatsapp-float svg {
+    width: 26px;
+    height: 26px;
+  }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header {
@@ -1409,6 +1712,17 @@ nav a:hover:not(.start-button) {
     border-radius: 10px;
   }
 
+  /* The desktop underline-sweep hover doesn't suit the stacked mobile
+     menu — fall back to a soft gold wash behind the tapped link. */
+  .mobile-menu nav a:not(.start-button)::after {
+    content: none;
+  }
+
+  .mobile-menu nav a:not(.start-button):hover {
+    transform: none;
+    background: rgba(196, 186, 2, 0.12);
+  }
+
   /* Mobile menu links turn gold on hover (see the shared nav a:hover rule). */
 
   .mobile-menu .start-button {
@@ -1453,8 +1767,7 @@ nav a:hover:not(.start-button) {
     flex-direction: column;
   }
 
-  .hero-actions .cta-button,
-  .hero-actions .cta-secondary {
+  .hero-actions .cta-button {
     width: 100%;
   }
 
@@ -1499,9 +1812,22 @@ nav a:hover:not(.start-button) {
     gap: 1.5rem;
   }
 
-  /* Contact cards: roomier touch targets on small screens */
+  /* Contact cards + form: roomier touch targets on small screens */
   .contact-card {
     padding: 1.5rem 1.25rem;
+  }
+
+  .form-wrapper {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .form-group {
+    margin-bottom: 1.25rem;
   }
 }
 
@@ -1523,6 +1849,10 @@ nav a:hover:not(.start-button) {
     background-clip: initial;
     -webkit-text-fill-color: currentColor;
     color: #d4af37;
+  }
+
+  .whatsapp-float {
+    transition: none;
   }
 
   .hero-particles {

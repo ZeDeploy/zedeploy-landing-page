@@ -80,9 +80,6 @@ export default function Hero() {
           <a href="#contact-form" className="cta-button">
             Book Free Consultation
           </a>
-          <a href="#services" className="cta-secondary">
-            Explore Services
-          </a>
         </div>
       </div>
 
