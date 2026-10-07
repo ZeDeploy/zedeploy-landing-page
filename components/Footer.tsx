@@ -38,8 +38,8 @@ export default function Footer() {
       <Image
         src="/zed-logo-preview.png"
         alt="ZeDeploy logo"
-        width={130}
-        height={130}
+        width={76}
+        height={76}
         className="footer-logo"
       />
       <div className="footer-socials">

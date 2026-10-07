@@ -125,7 +125,7 @@ nav a {
 nav a:not(.start-button) {
   position: relative;
   padding-bottom: 4px;
-  transition: color 0.5s, transform 0.5s;
+  transition: color 0.7s, transform 0.7s;
 }
 
 nav a:not(.start-button)::after {
@@ -139,7 +139,7 @@ nav a:not(.start-button)::after {
   background: var(--yellow-gradient);
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 nav a:not(.start-button):hover {
@@ -181,10 +181,16 @@ nav a:not(.start-button):hover::after {
   display: none;
 }
 
-/* Hero Section */
+/* Hero Section — frosted glass card over a living background: the
+   gradient slowly pans, blurred color orbs drift behind the card (its
+   backdrop blur diffuses them into the glassy haze), and a soft sheen
+   periodically sweeps across the card face. */
 .hero {
   background: var(--section-gradient);
-  padding: 6rem 2rem 4rem;
+  /* Oversized gradient so background-position can pan it */
+  background-size: 200% 200%;
+  animation: zd-hero-pan 20s ease-in-out infinite alternate;
+  padding: 8rem 2rem 6rem;
   text-align: center;
   position: relative;
   overflow: hidden;
@@ -196,36 +202,50 @@ nav a:not(.start-button):hover::after {
   justify-content: center;
 }
 
+/* Very subtle center vignette so the white type keeps its contrast */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.1) 0%,
-    rgba(0, 0, 0, 0.05) 100%
+  background: radial-gradient(
+    60rem 40rem at 50% 45%,
+    rgba(0, 0, 0, 0.08),
+    transparent 70%
   );
   pointer-events: none;
 }
 
-/* Frosted glass card — the hero centerpiece. The layered translucent
-   wash + rim highlight + saturated backdrop blur give it the classic
-   glassmorphism look. */
+/* Frosted glass card — the hero centerpiece. Layered translucent
+   wash + rim highlight + saturated backdrop blur give the classic
+   glassmorphism look, with a light sheen sweeping across it. */
 .hero-container {
   width: 100%;
-  max-width: 1360px;
+  max-width: 960px;
   margin: 0 auto;
   position: relative;
   z-index: 2;
-  background: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.22) 0%,
-    rgba(255, 255, 255, 0.08) 55%,
-    rgba(255, 255, 255, 0.14) 100%
-  );
+  /* Layer 1: the moving sheen. Layer 2: the glass wash. */
+  background-image:
+    linear-gradient(
+      115deg,
+      transparent 40%,
+      rgba(255, 255, 255, 0.16) 50%,
+      transparent 60%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.22) 0%,
+      rgba(255, 255, 255, 0.08) 55%,
+      rgba(255, 255, 255, 0.14) 100%
+    );
+  background-size: 250% 100%, 100% 100%;
+  background-position: 220% 0, 0 0;
+  animation: zd-card-sheen 7.5s ease-in-out infinite;
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 24px;
   padding: 3rem 2rem;
+  /* Clip the swirling aurora pseudo-element to the card */
+  overflow: hidden;
   /* Bright inner top rim (the glass edge) + deep ambient shadow */
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
@@ -235,168 +255,63 @@ nav a:not(.start-button):hover::after {
   -webkit-backdrop-filter: blur(24px) saturate(160%);
 }
 
-.hero h1 {
-  font-weight: 700;
-  margin-bottom: 1.25rem;
-  color: #ffffff;
-  line-height: 1.15;
-}
-
-/* First headline line — larger than the rest */
-.hero-title-main {
-  display: block;
-  font-size: clamp(2.4rem, 4.2vw, 3.8rem);
-  letter-spacing: -0.02em;
-}
-
-/* Second and third headline lines — smaller */
-.hero-title-line {
-  display: block;
-  font-size: clamp(1.5rem, 2.6vw, 2.4rem);
-  font-weight: 600;
-}
-
-/* Same gold as .cta-button so the highlight matches the buttons */
-.hero-highlight {
-  color: #d4af37;
-}
-
-.hero-description {
-  font-size: 1.1rem;
-  color: rgba(255, 255, 255, 0.95);
-  margin-bottom: 2rem;
-  max-width: 700px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.7;
-}
-
-.cta-button {
-  display: inline-block;
-  background: #d4af37;
-  color: var(--ink);
-  padding: 0.9rem 2.2rem;
-  border-radius: 50px;
-  text-decoration: none;
-  font-weight: 600;
-  transition: all 0.3s;
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.cta-button:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(196, 186, 2, 0.45);
-  filter: brightness(1.08);
-}
-
-/* Hero CTA row: primary + secondary side by side */
-.hero-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
-}
-
-/* --- Hero entrance choreography ---------------------------------------
-   Each line/paragraph/CTA row fades up with a stagger on load. */
-.hero-anim {
-  opacity: 0;
-  transform: translateY(24px);
-  animation: zd-hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-}
-
-.hero-anim-1 {
-  animation-delay: 0.1s;
-}
-.hero-anim-2 {
-  animation-delay: 0.25s;
-}
-.hero-anim-3 {
-  animation-delay: 0.4s;
-}
-.hero-anim-4 {
-  animation-delay: 0.6s;
-}
-.hero-anim-5 {
-  animation-delay: 0.8s;
-}
-
-@keyframes zd-hero-rise {
+@keyframes zd-hero-pan {
+  from {
+    background-position: 0% 0%;
+  }
   to {
-    opacity: 1;
-    transform: translateY(0);
+    background-position: 100% 100%;
   }
 }
 
-/* Shimmering sweep across the gold third line */
-.hero-shimmer {
-  display: inline-block;
-  background: linear-gradient(
-    100deg,
-    #d4af37 0%,
-    #d4af37 35%,
-    #fff7cc 50%,
-    #d4af37 65%,
-    #d4af37 100%
-  );
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: #d4af37; /* fallback if background-clip:text unsupported */
-  animation: zd-shimmer 3.2s ease-in-out 1.4s infinite;
+/* --- Card-body aurora ---------------------------------------------------
+   A pseudo-element with soft gold/green/white blobs slowly swirls
+   behind the card content (z-index -1 keeps it under the text but over
+   the glass wash). The parent's z-index: 2 creates the stacking
+   context, so the negative z-index stays inside the card. */
+.hero-container::before {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  z-index: -1;
+  pointer-events: none;
+  filter: blur(18px);
+  background:
+    radial-gradient(
+      38% 42% at 30% 30%,
+      rgba(228, 220, 60, 0.2),
+      transparent 70%
+    ),
+    radial-gradient(
+      34% 38% at 70% 65%,
+      rgba(255, 255, 255, 0.16),
+      transparent 70%
+    ),
+    radial-gradient(
+      30% 34% at 55% 20%,
+      rgba(122, 143, 122, 0.18),
+      transparent 70%
+    );
+  animation: zd-card-aurora 18s ease-in-out infinite alternate;
 }
 
-@keyframes zd-shimmer {
+@keyframes zd-card-aurora {
+  from {
+    transform: rotate(0deg) scale(1);
+  }
+  to {
+    transform: rotate(180deg) scale(1.08);
+  }
+}
+
+@keyframes zd-card-sheen {
   0%,
   55% {
-    background-position: 100% 0;
+    background-position: 220% 0, 0 0;
   }
+  85%,
   100% {
-    background-position: -60% 0;
-  }
-}
-
-/* --- Ambient floating particles ---------------------------------------- */
-.hero-particles {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  overflow: hidden;
-}
-
-.hero-particle {
-  position: absolute;
-  bottom: -12px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
-  animation: zd-particle-float linear infinite;
-}
-
-.hero-particle.is-gold {
-  background: rgba(228, 220, 60, 0.45);
-  box-shadow: 0 0 8px rgba(228, 220, 60, 0.65);
-}
-
-@keyframes zd-particle-float {
-  0% {
-    transform: translate(0, 0) scale(0.7);
-    opacity: 0;
-  }
-  10% {
-    opacity: 0.9;
-  }
-  90% {
-    opacity: 0.5;
-  }
-  100% {
-    transform: translate(var(--drift, 0px), -105vh) scale(1.15);
-    opacity: 0;
+    background-position: -120% 0, 0 0;
   }
 }
 
@@ -469,50 +384,133 @@ nav a:not(.start-button):hover::after {
   }
 }
 
-/* --- Scroll cue -------------------------------------------------------- */
+.hero h1 {
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  color: #ffffff;
+  line-height: 1.12;
+  letter-spacing: -0.025em;
+}
+
+/* First headline line — larger than the rest */
+.hero-title-main {
+  display: block;
+  font-size: clamp(2.6rem, 5.2vw, 4.2rem);
+}
+
+/* Second and third headline lines — smaller */
+.hero-title-line {
+  display: block;
+  font-size: clamp(1.5rem, 2.6vw, 2.4rem);
+  font-weight: 600;
+}
+
+/* Same gold as .cta-button so the highlight matches the buttons */
+.hero-highlight {
+  color: #d4af37;
+}
+
+.hero-description {
+  font-size: 1.15rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 2.5rem;
+  max-width: 620px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.75;
+}
+
+.cta-button {
+  display: inline-block;
+  background: #d4af37;
+  color: var(--ink);
+  padding: 0.9rem 2.2rem;
+  border-radius: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(196, 186, 2, 0.45);
+  filter: brightness(1.08);
+}
+
+/* Hero CTA row: primary + secondary side by side */
+.hero-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* --- Hero entrance choreography ---------------------------------------
+   Each line/paragraph/CTA row fades up with a stagger on load. */
+.hero-anim {
+  opacity: 0;
+  transform: translateY(24px);
+  animation: zd-hero-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.hero-anim-1 {
+  animation-delay: 0.1s;
+}
+.hero-anim-2 {
+  animation-delay: 0.25s;
+}
+.hero-anim-3 {
+  animation-delay: 0.4s;
+}
+.hero-anim-4 {
+  animation-delay: 0.6s;
+}
+.hero-anim-5 {
+  animation-delay: 0.8s;
+}
+
+@keyframes zd-hero-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --- Scroll cue: a small, quiet chevron --------------------------------- */
 .hero-scroll-cue {
   position: absolute;
   left: 50%;
-  bottom: 1.5rem;
+  bottom: 1.75rem;
   transform: translateX(-50%);
   z-index: 2;
-  display: flex;
-  justify-content: center;
-  opacity: 0;
-  animation: zd-hero-rise 0.8s ease 1.6s forwards;
+  color: rgba(255, 255, 255, 0.75);
+  transition: color 0.3s;
 }
 
-.hero-scroll-mouse {
+.hero-scroll-cue:hover {
+  color: #d4af37;
+}
+
+.hero-scroll-cue svg {
   display: block;
-  width: 26px;
-  height: 42px;
-  border: 2px solid rgba(255, 255, 255, 0.7);
-  border-radius: 14px;
-  padding-top: 7px;
+  width: 24px;
+  height: 24px;
+  animation: zd-chev-bob 2.4s ease-in-out infinite;
 }
 
-.hero-scroll-wheel {
-  display: block;
-  width: 4px;
-  height: 8px;
-  margin: 0 auto;
-  border-radius: 2px;
-  background: #d4af37;
-  animation: zd-scroll-wheel 1.6s ease-in-out infinite;
-}
-
-@keyframes zd-scroll-wheel {
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  70% {
-    transform: translateY(12px);
-    opacity: 0;
-  }
+@keyframes zd-chev-bob {
+  0%,
   100% {
     transform: translateY(0);
-    opacity: 0;
+    opacity: 0.75;
+  }
+  50% {
+    transform: translateY(6px);
+    opacity: 1;
   }
 }
 
@@ -562,17 +560,50 @@ nav a:not(.start-button):hover::after {
 
 /* Services Section */
 .services {
-  background: #ffffff;
+  /* Soft gold/green washes give the frosted cards something colorful to
+     diffuse — plain white would flatten the glassmorphism effect. */
+  background:
+    radial-gradient(38rem 24rem at 12% 8%, rgba(228, 220, 60, 0.16), transparent 60%),
+    radial-gradient(42rem 26rem at 88% 92%, rgba(56, 112, 88, 0.14), transparent 60%),
+    #ffffff;
   padding: 4rem 2rem;
+  position: relative;
+  overflow: hidden;
 }
 
-.service-card {
-  box-shadow: 0 4px 16px rgba(44, 44, 44, 0.08);
+/* Blurred color orbs behind the grid — the cards' backdrop blur
+   diffuses these into the glassy haze. */
+.services::before,
+.services::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.services::before {
+  width: 26rem;
+  height: 26rem;
+  top: -6rem;
+  left: -8rem;
+  background: rgba(228, 220, 60, 0.35);
+}
+
+.services::after {
+  width: 30rem;
+  height: 30rem;
+  bottom: -10rem;
+  right: -10rem;
+  background: rgba(56, 112, 88, 0.3);
 }
 
 .services-container {
   max-width: 1200px;
   margin: 0 auto;
+  position: relative;
+  z-index: 1;
 }
 
 .section-title {
@@ -589,27 +620,67 @@ nav a:not(.start-button):hover::after {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
   gap: 2rem;
   margin-bottom: 3rem;
+  align-items: stretch;
+}
+
+/* The Reveal wrapper is the actual grid item, so it must stretch and
+   pass the full height down to the card — that's what makes every card
+   in a row the same size. */
+.services-grid .reveal {
+  height: 100%;
 }
 
 .service-card {
+  height: 100%;
   padding: 2rem;
   border-radius: 12px;
-  /* Gradient border: white fill inside, yellow gradient on the border box */
-  border: 2px solid transparent;
-  transition: all 0.3s;
+  /* Subtle glass edge — the yellow appears only on hover, as the
+     blinking ring in .service-card:hover below. */
+  border: 1px solid rgba(255, 255, 255, 0.6);
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background:
-    linear-gradient(#ffffff, #ffffff) padding-box,
-    var(--yellow-gradient) border-box;
+  /* Frosted glass: translucent white fill over the blurred backdrop. */
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.75) 0%,
+    rgba(255, 255, 255, 0.55) 55%,
+    rgba(255, 255, 255, 0.65) 100%
+  );
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  /* Bright inner top rim (glass edge) + soft ambient shadow */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    0 4px 16px rgba(44, 44, 44, 0.08);
   color: var(--ink);
+  transition:
+    transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.4s ease;
+  will-change: transform;
 }
 
+/* Hover: the card zooms while a yellow glow blinks around it
+   (pulsing ring animation below). */
 .service-card:hover {
-  box-shadow: 0 12px 32px rgba(196, 186, 2, 0.35);
-  transform: translateY(-4px);
-  filter: brightness(1.03);
+  transform: translateY(-6px) scale(1.04);
+  animation: zd-glow-blink 1.2s ease-in-out infinite;
+}
+
+@keyframes zd-glow-blink {
+  0%,
+  100% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      0 0 0 2px rgba(228, 220, 60, 0.55),
+      0 0 22px 4px rgba(212, 175, 55, 0.35);
+  }
+  50% {
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      0 0 0 3px rgba(228, 220, 60, 0.95),
+      0 0 44px 10px rgba(212, 175, 55, 0.6);
+  }
 }
 
 .service-icon {
@@ -697,7 +768,7 @@ nav a:not(.start-button):hover::after {
   color: #ffffff;
   /* Shrink to the text so the hover underline stops at the label */
   width: fit-content;
-  transition: transform 0.5s;
+  transition: transform 0.7s;
 }
 
 .feature-list li:before {
@@ -707,7 +778,7 @@ nav a:not(.start-button):hover::after {
   color: #ffffff;
   font-weight: bold;
   font-size: 1.2rem;
-  transition: color 0.5s;
+  transition: color 0.7s;
 }
 
 /* Feature hover: the same directional gold underline sweep as the nav —
@@ -724,7 +795,7 @@ nav a:not(.start-button):hover::after {
   background: var(--yellow-gradient);
   transform: scaleX(0);
   transform-origin: right;
-  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.95s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .feature-list li:hover {
@@ -1512,18 +1583,23 @@ nav a:not(.start-button):hover::after {
 .footer {
   background: var(--sage);
   color: #ffffff;
-  padding: 2rem;
+  /* Compact footer: vertical padding, gaps, logo and icon sizes are
+     all kept small so the bar stays short. */
+  padding: 0.5rem 1.5rem 0.75rem;
   text-align: center;
   font-size: 0.95rem;
 }
 
 .footer p {
   opacity: 0.9;
-  margin-top: 0.75rem;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
 }
 
 .footer-logo {
   margin: 0 auto;
+  width: 76px;
+  height: auto;
   filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
 }
 
@@ -1532,16 +1608,16 @@ nav a:not(.start-button):hover::after {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1.25rem;
+  gap: 0.6rem;
+  margin-top: 0.25rem;
 }
 
 .footer-social-link {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   color: #ffffff;
   background: rgba(255, 255, 255, 0.12);
@@ -1550,15 +1626,15 @@ nav a:not(.start-button):hover::after {
 }
 
 .footer-social-link svg {
-  width: 20px;
-  height: 20px;
+  width: 17px;
+  height: 17px;
 }
 
 .footer-social-link:hover {
   background: var(--gold);
   border-color: var(--gold);
   color: var(--ink);
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   box-shadow: 0 8px 20px rgba(196, 186, 2, 0.45);
 }
 
@@ -1731,11 +1807,6 @@ nav a:not(.start-button):hover::after {
     padding: 0.8rem 1.5rem;
   }
 
-  .footer-logo {
-    width: 96px;
-    height: auto;
-  }
-
   /* Fluid clamp() type handles heading sizes at every width —
      tighten spacing instead of jumping font sizes. */
   .hero {
@@ -1835,37 +1906,47 @@ nav a:not(.start-button):hover::after {
    Content stays fully visible; entrance/reveal animations jump to their
    final state instead of animating. */
 @media (prefers-reduced-motion: reduce) {
-  .hero-anim,
-  .hero-scroll-cue {
+  .hero,
+  .hero-container,
+  .orb {
+    animation: none;
+  }
+
+  /* Park the sheen off the card face and freeze the aurora */
+  .hero-container {
+    background-position: 220% 0, 0 0;
+  }
+
+  .hero-container::before {
+    animation: none;
+  }
+
+  .hero-anim {
     animation: none;
     opacity: 1;
     transform: none;
   }
 
-  .hero-shimmer {
+  .hero-scroll-cue {
     animation: none;
-    background: none;
-    -webkit-background-clip: initial;
-    background-clip: initial;
-    -webkit-text-fill-color: currentColor;
-    color: #d4af37;
-  }
-
-  .whatsapp-float {
-    transition: none;
-  }
-
-  .hero-particles {
-    display: none;
   }
 
   .hero-glass-orbs {
     display: none;
   }
 
-  .hero-scroll-mouse,
-  .hero-scroll-wheel {
+  .whatsapp-float {
+    transition: none;
+  }
+
+  .service-card:hover {
+    transform: translateY(-4px);
     animation: none;
+    /* Static glow ring instead of the blink for reduced motion. */
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.55),
+      0 0 0 3px rgba(228, 220, 60, 0.9),
+      0 0 36px 8px rgba(212, 175, 55, 0.5);
   }
 
   .reveal.reveal-up,
