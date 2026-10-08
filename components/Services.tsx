@@ -1,7 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "./Reveal";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   {
@@ -42,42 +46,89 @@ const services = [
   },
 ];
 
+/**
+ * Depth stack & fan-out (GSAP ScrollTrigger).
+ *
+ * The section pins in place while the visitor scrolls ~1200px. A scrubbed
+ * tween eases each card's --fan custom property from 0 (stacked in the
+ * center of the grid, tilted and scaled down) to 1 (settled precisely in
+ * its final grid position). The stacked offsets and tilts live in
+ * globals.css (--dx/--dy/--rot per card, per breakpoint); this component
+ * only drives progress and the pin. Respect for prefers-reduced-motion is
+ * handled both here (no trigger/pin) and in CSS (transform: none).
+ */
 export default function Services() {
   const [active, setActive] = useState<number | null>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+    // Reduced motion: leave the cards in their final grid positions.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const ctx = gsap.context(() => {
+      const cards = gsap.utils.toArray<HTMLElement>(".service-card", section);
+      // Snap the deck into its stacked state right after hydration (the
+      // section sits below the fold, so no visible flash).
+      gsap.set(cards, { "--fan": 0 });
+      gsap.to(cards, {
+        "--fan": 1,
+        ease: "power2.inOut",
+        scrollTrigger: {
+          trigger: section,
+          // Start when the section top reaches the sticky header's bottom
+          // edge (~80px); hold for 1200px of scroll, like the reference.
+          start: "top 80px",
+          end: "+=1200",
+          scrub: 1, // 1s smoothing lag behind the scrollbar
+          pin: true,
+          anticipatePin: 1,
+          invalidateOnRefresh: true,
+        },
+      });
+    }, section);
+
+    return () => ctx.revert(); // unpins and restores everything on unmount
+  }, []);
 
   const handleCardClick = (index: number) => {
     setActive(active === index ? null : index);
   };
 
   return (
-    <section className="services" id="services">
+    <section className="services" id="services" ref={sectionRef}>
       <div className="services-container">
         <Reveal>
           <h2 className="section-title">Our Services</h2>
         </Reveal>
         <div className="services-grid">
           {services.map((service, index) => (
-            <Reveal key={service.title} from="scale" delay={index * 90}>
+            /* No Reveal wrapper here on purpose: the pinned fan-out scrub IS
+               the entrance animation. A second, staggered opacity transition
+               firing mid-scrub made the cards flicker. */
+            <div
+              key={service.title}
+              className="service-card"
+              onClick={() => handleCardClick(index)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") handleCardClick(index);
+              }}
+            >
               <div
-                className="service-card"
-                style={{ flex: "0 0 calc(50% - 1rem)" }}
-                onClick={() => handleCardClick(index)}
-                role="button"
-                tabIndex={0}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleCardClick(index);
-                }}
+                className="service-card-overlay"
+                style={{ display: active === index ? "block" : "none" }}
               >
-                <div className="service-card-overlay" style={{ display: active === index ? "block" : "none" }}>
-                  <span className="service-card-overlay-text">
-                    {active === index ? "See next card" : "Upgraded to full detail"}
-                  </span>
-                </div>
-                <div className="service-icon">{service.icon}</div>
-                <h3>{service.title}</h3>
-                <p>{service.description}</p>
+                <span className="service-card-overlay-text">
+                  {active === index ? "See next card" : "Upgraded to full detail"}
+                </span>
               </div>
-            </Reveal>
+              <div className="service-icon">{service.icon}</div>
+              <h3>{service.title}</h3>
+              <p>{service.description}</p>
+            </div>
           ))}
         </div>
       </div>

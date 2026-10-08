@@ -38,8 +38,11 @@ export default function Header() {
   }, []);
 
   // Lock body scroll while the menu is open.
+  // (Guarded with a typeof window check so this only executes client-side;
+  // reading document at module scope during SSR throws an error.)
   useEffect(() => {
     if (!menuOpen) return;
+    if (typeof document === "undefined") return;
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     return () => {
