@@ -1418,18 +1418,11 @@ nav a:not(.start-button):hover::after {
 
 }
 
-
-
 /* Hover: the card zooms while a yellow glow blinks around it
-
    (pulsing ring animation below). The lift/zoom are applied through
-
    custom properties consumed by the fan-out transform chain above —
-
    a plain `transform:` override here would clobber the stacked/fanned
-
    position mid-animation. */
-
 .service-card:hover {
 
   --hover-lift: -6px;
@@ -1439,6 +1432,37 @@ nav a:not(.start-button):hover::after {
   animation: zd-glow-blink 1.2s ease-in-out infinite;
 
 }
+
+
+
+/* While the pinned fan-out is scrubbing (Services.tsx toggles this class
+   via ScrollTrigger's onUpdate), the cards are in motion under the cursor.
+   A hover here leaves a card lifted and glowing mid-air ("stuck") and
+   clicks fire mid-scroll, so pointer interaction is fully disabled for the
+   duration and re-enabled once the fan settles (progress reaches 1). */
+.services.is-fanning .service-card {
+
+  pointer-events: none;
+
+  user-select: none;
+
+}
+
+/* Belt-and-braces: if the browser still reports a stale :hover match when
+   the class lands (pointer hasn't moved since), force the hover state off. */
+.services.is-fanning .service-card:hover {
+
+  --hover-lift: 0px;
+
+  --hover-zoom: 0;
+
+  animation: none;
+
+}
+
+
+
+
 
 
 

@@ -60,6 +60,7 @@ const services = [
 export default function Services() {
   const [active, setActive] = useState<number | null>(null);
   const sectionRef = useRef<HTMLElement>(null);
+  const wasFanning = useRef(false);
 
   useEffect(() => {
     const section = sectionRef.current;
@@ -85,14 +86,38 @@ export default function Services() {
           pin: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
+          // While the fan-out is scrubbing (progress < 1) the cards are in
+          // motion under the cursor: a hover would leave a card lifted and
+          // glowing mid-air ("stuck") and a click would fire mid-scroll.
+          // Flag the section so CSS can disable pointer interaction, and
+          // clear any overlay opened before the scroll started.
+          onUpdate: (self) => {
+            const fanning = self.progress < 1;
+            if (fanning === wasFanning.current) return;
+            wasFanning.current = fanning;
+            section.classList.toggle("is-fanning", fanning);
+            if (fanning) setActive(null);
+          },
+          // Scrolling back up past the start releases the pin — cards are
+          // interactive again (they're already moving off-screen).
+          onLeaveBack: () => {
+            wasFanning.current = false;
+            section.classList.remove("is-fanning");
+          },
         },
       });
     }, section);
 
-    return () => ctx.revert(); // unpins and restores everything on unmount
+    return () => {
+      ctx.revert(); // unpins and restores everything on unmount
+      section.classList.remove("is-fanning");
+    };
   }, []);
 
   const handleCardClick = (index: number) => {
+    // Ignore selection while the fan-out is scrubbing (mouse and keyboard
+    // both route through here) — cards are in motion mid-scroll.
+    if (sectionRef.current?.classList.contains("is-fanning")) return;
     setActive(active === index ? null : index);
   };
 
