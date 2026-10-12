@@ -1,4 +1,5 @@
 import Reveal from "./Reveal";
+import TiltCard from "./TiltCard";
 
 // Contact details rendered on the card row
 const EMAIL = "info.zedeploy@gmail.com";
@@ -75,15 +76,17 @@ export default function Contact() {
 
         <Reveal from="scale" delay={240}>
           <div className="contact-cards">
-            <a className="contact-card" href={`mailto:${EMAIL}`}>
+            <TiltCard className="contact-card tilt-card">
               <span className="contact-card-icon" aria-hidden="true">
                 <MailIcon />
               </span>
               <span className="contact-card-label">Email Us</span>
-              <span className="contact-card-value">{EMAIL}</span>
-            </a>
+              <span className="contact-card-value">
+                <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+              </span>
+            </TiltCard>
 
-            <div className="contact-card">
+            <TiltCard className="contact-card tilt-card">
               <span className="contact-card-icon" aria-hidden="true">
                 <PhoneIcon />
               </span>
@@ -95,15 +98,15 @@ export default function Contact() {
                   </a>
                 ))}
               </span>
-            </div>
+            </TiltCard>
 
-            <div className="contact-card">
+            <TiltCard className="contact-card tilt-card">
               <span className="contact-card-icon" aria-hidden="true">
                 <PinIcon />
               </span>
               <span className="contact-card-label">Visit Us</span>
               <span className="contact-card-value">{LOCATIONS}</span>
-            </div>
+            </TiltCard>
           </div>
         </Reveal>
       </div>

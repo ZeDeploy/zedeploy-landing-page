@@ -1163,6 +1163,10 @@ nav a:not(.start-button):hover::after {
   --services-card-click-translate-x: 0;
   --services-card-click-translate-y: 0;
   --services-card-click-opacity: 1;
+  /* Once the fan-out pin releases, the bottom row (cards 4-6) sits only
+     the grid's margin away from the Infrastructure section — add real
+     breathing room below the last cards. */
+  padding: 0 0 5rem;
 }
 
 /* --- Depth stack & fan-out (GSAP ScrollTrigger) --------------------------
@@ -1176,14 +1180,56 @@ nav a:not(.start-button):hover::after {
    tilt), so the browser only interpolates one transform. Without JS (or
    for reduced-motion users) --fan falls back to 1: cards sit in place. */
 .services .service-card {
+  /* --rx/--ry are the pointer-following tilt set by TiltCard (Contact's
+     holographic hover). They sit at the end of the chain so they only
+     affect the settled card — during the fan-out they are forced to 0. */
   transform:
+    perspective(900px)
     translate(
       calc(var(--dx, 0%) * (1 - var(--fan, 1))),
       calc(var(--dy, 0%) * (1 - var(--fan, 1)))
     )
     scale(calc(1 - 0.14 * (1 - var(--fan, 1)) + var(--hover-zoom, 0)))
     rotate(calc(var(--rot, 0deg) * (1 - var(--fan, 1))))
-    translateY(var(--hover-lift, 0px));
+    translateY(var(--hover-lift, 0px))
+    rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg));
+}
+
+/* Pointer tilt eases with the exact same timing as the contact cards
+   (.tilt-card) — and only once the fan-out has settled; a transform
+   transition while GSAP is scrubbing would lag behind the scrollbar. */
+.services:not(.is-fanning) .service-card {
+  transition: box-shadow 0.3s, transform 0.15s ease-out;
+}
+
+/* Cursor-tracking glare highlight — the exact same yellow reflection as
+   the contact cards (.tilt-card::after). */
+.service-card {
+  position: relative;
+}
+
+.service-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    240px circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(228, 220, 60, 0.18),
+    transparent 65%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.service-card:hover::after {
+  opacity: 1;
+}
+
+.services.is-fanning .service-card::after {
+  opacity: 0;
 }
 
 /* The nth-child selectors target the cards directly — they are the grid
@@ -1300,7 +1346,9 @@ nav a:not(.start-button):hover::after {
 
 .services-container {
 
-  max-width: 1200px;
+  /* Slightly narrower than the other sections (1200px) so each card in
+     the 3-column grid comes in ~20px slimmer. */
+  max-width: 1140px;
 
   margin: 0 auto;
 
@@ -1364,15 +1412,12 @@ nav a:not(.start-button):hover::after {
 
   height: 100%;
 
-  padding: 2rem;
-
-  border-radius: 12px;
+  padding: 2rem;  border-radius: 12px;
 
   /* Subtle glass edge — the yellow appears only on hover, as the
+     glow in .service-card:hover below. */
 
-     blinking ring in .service-card:hover below. */
-
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.14);
 
   display: flex;
 
@@ -1380,17 +1425,17 @@ nav a:not(.start-button):hover::after {
 
   gap: 1rem;
 
-  /* Frosted glass: translucent white fill over the blurred backdrop. */
+  /* Frosted glass: translucent dark-grey fill over the blurred backdrop. */
 
   background: linear-gradient(
 
     135deg,
 
-    rgba(255, 255, 255, 0.75) 0%,
+    rgba(48, 48, 51, 0.92) 0%,
 
-    rgba(255, 255, 255, 0.55) 55%,
+    rgba(38, 38, 41, 0.9) 55%,
 
-    rgba(255, 255, 255, 0.65) 100%
+    rgba(48, 48, 51, 0.92) 100%
 
   );
 
@@ -1398,15 +1443,16 @@ nav a:not(.start-button):hover::after {
 
   -webkit-backdrop-filter: blur(16px) saturate(160%);
 
-  /* Bright inner top rim (glass edge) + soft ambient shadow */
+  /* Soft inner top rim (glass edge) + ambient shadow */
 
   box-shadow:
 
-    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
 
     0 4px 16px rgba(44, 44, 44, 0.08);
 
-  color: var(--ink);
+  color: #ffffff;
+
 
   /* NOTE: no transition on transform — GSAP's scrubbed tween drives the
      fan-out transform every frame, and a CSS transition would lag behind
@@ -1418,18 +1464,28 @@ nav a:not(.start-button):hover::after {
 
 }
 
-/* Hover: the card zooms while a yellow glow blinks around it
-   (pulsing ring animation below). The lift/zoom are applied through
-   custom properties consumed by the fan-out transform chain above —
-   a plain `transform:` override here would clobber the stacked/fanned
-   position mid-animation. */
+/* Second row (cards 4-6) gets roomier padding than the first row,
+   so the deck doesn't read as one uniform block. Higher specificity
+   than the base/mobile padding rules, so a matching mobile override
+   lives in the small-screen block below. */
+.services-grid > .service-card:nth-child(n + 4) {
+  padding: 3rem 2.75rem;
+}
+
+/* Hover: same treatment as the contact cards (.contact-card:hover) —
+   yellow glow shadow plus a -4px lift — now with the pointer-following
+   tilt on top. Lift/zoom go through custom properties consumed by the
+   fan-out transform chain above; a plain `transform:` override here
+   would clobber the stacked/fanned position mid-animation. */
 .service-card:hover {
 
-  --hover-lift: -6px;
+  --hover-lift: -4px;
 
-  --hover-zoom: 0.04;
+  --hover-zoom: 0;
 
-  animation: zd-glow-blink 1.2s ease-in-out infinite;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 32px rgba(196, 186, 2, 0.35);
 
 }
 
@@ -1456,7 +1512,13 @@ nav a:not(.start-button):hover::after {
 
   --hover-zoom: 0;
 
-  animation: none;
+  --rx: 0deg;
+
+  --ry: 0deg;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 4px 16px rgba(44, 44, 44, 0.08);
 
 }
 
@@ -1466,35 +1528,6 @@ nav a:not(.start-button):hover::after {
 
 
 
-@keyframes zd-glow-blink {
-
-  0%,
-
-  100% {
-
-    box-shadow:
-
-      inset 0 1px 0 rgba(255, 255, 255, 0.55),
-
-      0 0 0 2px rgba(228, 220, 60, 0.55),
-
-      0 0 22px 4px rgba(212, 175, 55, 0.35);
-
-  }
-
-  50% {
-
-    box-shadow:
-
-      inset 0 1px 0 rgba(255, 255, 255, 0.55),
-
-      0 0 0 3px rgba(228, 220, 60, 0.95),
-
-      0 0 44px 10px rgba(212, 175, 55, 0.6);
-
-  }
-
-}
 
 
 
@@ -1552,7 +1585,7 @@ nav a:not(.start-button):hover::after {
 
   font-weight: 600;
 
-  color: var(--ink);
+  color: #ffffff;
 
 }
 
@@ -1566,7 +1599,7 @@ nav a:not(.start-button):hover::after {
 
   line-height: 1.6;
 
-  color: var(--muted);
+  color: #c7c7cc;
 
 }
 
@@ -2398,13 +2431,13 @@ nav a:not(.start-button):hover::after {
 
   background:
 
-    linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(135deg, #303033 0%, #2a2a2d 100%) padding-box,
 
     var(--yellow-gradient) border-box;
 
   box-shadow: 0 4px 16px rgba(44, 44, 44, 0.08);
 
-  color: var(--ink);
+  color: #ffffff;
 
   text-decoration: none;
 
@@ -2414,11 +2447,90 @@ nav a:not(.start-button):hover::after {
 
 
 
-.contact-card:hover {
+.contact-card:hover:not(.tilt-card) {
 
   box-shadow: 0 12px 32px rgba(196, 186, 2, 0.35);
 
   transform: translateY(-4px);
+
+}
+
+/* Holographic mouse-follow tilt (Email / Call / Visit cards).
+   --rx/--ry are set per-frame from JS in Contact.tsx; the glare highlight
+   (--gx/--gy) tracks the cursor like a reflection on glass. */
+.tilt-card {
+
+  position: relative;
+
+  transform-style: preserve-3d;
+
+  /* perspective() inside the transform is what makes rotateX/rotateY read
+     as a real 3D tilt — without it the rotation is nearly invisible. */
+  transform:
+    perspective(900px)
+    translateY(var(--lift, 0px))
+    rotateX(var(--rx, 0deg))
+    rotateY(var(--ry, 0deg));
+
+  transition: transform 0.15s ease-out, box-shadow 0.3s;
+
+  will-change: transform;
+
+  overflow: hidden;
+
+}
+
+.tilt-card:hover {
+
+  --lift: -4px;
+
+}
+
+/* Cursor-tracking glare overlay */
+.tilt-card::after {
+
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background: radial-gradient(
+    240px circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(228, 220, 60, 0.18),
+    transparent 65%
+  );
+
+  opacity: 0;
+
+  transition: opacity 0.3s;
+
+}
+
+.tilt-card:hover::after {
+
+  opacity: 1;
+
+}
+
+/* Inner content floats above the tilted surface */
+.tilt-card > * {
+
+  transform: translateZ(24px);
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .tilt-card,
+
+  .tilt-card > * {
+
+    transform: none;
+
+  }
 
 }
 
@@ -2478,7 +2590,7 @@ nav a:not(.start-button):hover::after {
 
   text-transform: uppercase;
 
-  color: var(--muted);
+  color: #b9b9b9;
 
 }
 
@@ -2510,7 +2622,7 @@ nav a:not(.start-button):hover::after {
 
 .contact-card-value a:hover {
 
-  color: var(--gold);
+  color: var(--gold-light);
 
 }
 
@@ -3828,6 +3940,16 @@ nav a:not(.start-button):hover::after {
 
 
 
+  /* Extra breathing room below the last service-card row */
+
+  .services {
+
+    padding-bottom: 4.5rem;
+
+  }
+
+
+
   .stats {
 
     padding: 2.5rem 1.25rem;
@@ -3857,6 +3979,16 @@ nav a:not(.start-button):hover::after {
   .service-card {
 
     padding: 1.5rem;
+
+  }
+
+
+
+  /* Second-row padding stays roomier than the first, scaled down */
+
+  .services-grid > .service-card:nth-child(n + 4) {
+
+    padding: 2rem 1.75rem;
 
   }
 

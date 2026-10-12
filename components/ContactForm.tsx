@@ -110,7 +110,7 @@ export default function ContactForm() {
                   className="form-submit"
                   disabled={sending || submitted}
                 >
-                  {submitted ? "✓ Submitted Successfully!" : "Sign Up Now"}
+                  {submitted ? "✓ Submitted Successfully!" : "Submit"}
                 </button>
                 {error && (
                   <p className="form-message form-message-error">

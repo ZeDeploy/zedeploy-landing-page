@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Reveal from "./Reveal";
+import TiltCard from "./TiltCard";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -132,7 +133,7 @@ export default function Services() {
             /* No Reveal wrapper here on purpose: the pinned fan-out scrub IS
                the entrance animation. A second, staggered opacity transition
                firing mid-scrub made the cards flicker. */
-            <div
+            <TiltCard
               key={service.title}
               className="service-card"
               onClick={() => handleCardClick(index)}
@@ -153,7 +154,7 @@ export default function Services() {
               <div className="service-icon">{service.icon}</div>
               <h3>{service.title}</h3>
               <p>{service.description}</p>
-            </div>
+            </TiltCard>
           ))}
         </div>
       </div>
