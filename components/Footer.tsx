@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import Reveal from "./Reveal";
 
 // Social profiles. The first four use "#" placeholders — swap in the
 // real profile URLs once the accounts exist.
@@ -35,35 +37,42 @@ const socials = [
 export default function Footer() {
   return (
     <footer className="footer">
-      <Image
-        src="/zed-logo-preview.png"
-        alt="ZeDeploy logo"
-        width={76}
-        height={76}
-        className="footer-logo"
-      />
-      <div className="footer-socials">
-        {socials.map(({ label, href, d }) => (
-          <a
-            key={label}
-            href={href}
-            className="footer-social-link"
-            aria-label={label}
-            title={label}
-            {...(href.startsWith("http")
-              ? { target: "_blank", rel: "noopener noreferrer" }
-              : {})}
-          >
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d={d} />
-            </svg>
-          </a>
-        ))}
-      </div>
-      <p>
-        &copy; 2026 ZeDeploy. All rights reserved. | Building the future of
-        cloud infrastructure
-      </p>
+      {/* Scroll-reveal wrapper: the whole footer rises in, then the logo,
+          social icons and copyright stagger in behind it (see the
+          .footer-reveal rules in globals.css). */}
+      <Reveal from="up" className="footer-reveal">
+        <Image
+          src="/zed-logo-preview.png"
+          alt="ZeDeploy logo"
+          width={76}
+          height={76}
+          className="footer-logo"
+        />
+        <div className="footer-socials">
+          {socials.map(({ label, href, d }) => (
+            <a
+              key={label}
+              href={href}
+              className="footer-social-link"
+              aria-label={label}
+              title={label}
+              {...(href.startsWith("http")
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d={d} />
+              </svg>
+            </a>
+          ))}
+        </div>
+        <p>
+          &copy; 2026 ZeDeploy. All rights reserved. | Building the future of
+          cloud infrastructure
+          {" "}
+          &middot; <Link href="/privacy">Privacy Policy</Link>
+        </p>
+      </Reveal>
     </footer>
   );
 }

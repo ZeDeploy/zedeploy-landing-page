@@ -402,6 +402,128 @@ nav a:not(.start-button):hover::after {
 
 
 
+/* --- Header entrance & scroll state -------------------------------------
+   On load the logo, nav links and hamburger rise in on a stagger so the bar
+   assembles itself instead of just appearing. The keyframes run with
+   `backwards` fill only: each element sits at its from-state during its
+   delay, and the moment the entrance ends the animation stops applying —
+   hover transforms (nav lift, button glow, logo tilt) take over again, and
+   if animations are disabled entirely the header is simply visible. */
+
+.header {
+
+  transition: background 0.35s ease, box-shadow 0.35s ease;
+
+}
+
+
+
+.header-container .logo,
+
+.header-container .desktop-nav > a,
+
+.header-container .hamburger {
+
+  animation: zd-header-rise 0.65s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+
+}
+
+
+
+.header-container .logo {
+
+  animation-delay: 0.05s;
+
+}
+
+
+
+/* One nav link after another — including the Get Started button last. */
+
+.header-container .desktop-nav > a:nth-child(1) {
+
+  animation-delay: 0.18s;
+
+}
+
+.header-container .desktop-nav > a:nth-child(2) {
+
+  animation-delay: 0.26s;
+
+}
+
+.header-container .desktop-nav > a:nth-child(3) {
+
+  animation-delay: 0.34s;
+
+}
+
+.header-container .desktop-nav > a:nth-child(4) {
+
+  animation-delay: 0.42s;
+
+}
+
+.header-container .desktop-nav > a:nth-child(5) {
+
+  animation-delay: 0.5s;
+
+}
+
+.header-container .hamburger {
+
+  animation-delay: 0.2s;
+
+}
+
+
+
+@keyframes zd-header-rise {
+
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+
+}
+
+
+
+/* Logo hover — a small springy lift, matching the icon hovers elsewhere. */
+
+.logo {
+
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+}
+
+.logo:hover {
+
+  transform: translateY(-3px);
+
+}
+
+
+
+/* Scrolled state: once the visitor leaves the top, the bar deepens its
+   shadow (and glass) so it reads as floating above the sections below. */
+
+.header.is-scrolled {
+
+  background: rgba(255, 255, 255, 0.9);
+
+  border-bottom-color: rgba(255, 255, 255, 0.75);
+
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+
+}
+
+
+
 /* Hero Section — frosted glass card over a living background: the
 
    gradient slowly pans, blurred color orbs drift behind the card (its
@@ -1601,6 +1723,303 @@ nav a:not(.start-button):hover::after {
 
   color: #c7c7cc;
 
+}
+
+
+
+/* --- Service detail dialog (opened by clicking a card heading) ------- */
+
+/* The card's <h3> wraps a real <button> so the whole title is clickable
+   and keyboard-reachable. It renders exactly like the plain heading. */
+.service-card h3 .service-title-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: color 0.25s ease;
+}
+
+.service-card h3 .service-title-button:hover {
+  color: var(--gold-light);
+}
+
+/* Arrow that slides in to signal the heading opens something. */
+.service-card h3 .service-title-button::after {
+  content: "→";
+  font-size: 0.9em;
+  color: var(--gold-light);
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.service-card h3 .service-title-button:hover::after,
+.service-card h3 .service-title-button:focus-visible::after {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.service-card h3 .service-title-button:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* Backdrop — portaled to <body>, so it sits above the pinned section
+   (z-index 100 header, 90 float) and every stacking context in between. */
+.service-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: rgba(16, 18, 16, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  /* Tall content (small screens) stays scrollable. */
+  overflow-y: auto;
+  animation: service-modal-fade 0.2s ease;
+}
+
+/* Panel: same frosted-glass language as .service-card. `margin: auto`
+   keeps it centered but still reachable when it is taller than the
+   viewport (auto margins collapse to 0 against negative free space). */
+.service-modal {
+  position: relative;
+  width: min(100%, 640px);
+  margin: auto;
+  padding: 2.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: linear-gradient(
+    135deg,
+    rgba(48, 48, 51, 0.97) 0%,
+    rgba(32, 32, 35, 0.97) 55%,
+    rgba(48, 48, 51, 0.97) 100%
+  );
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 30px 80px rgba(0, 0, 0, 0.55);
+  color: #ffffff;
+  outline: none;
+  animation: service-modal-pop 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.service-modal-close {
+  position: absolute;
+  top: 1.1rem;
+  right: 1.1rem;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, transform 0.3s;
+}
+
+.service-modal-close:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--gold-light);
+  transform: rotate(90deg);
+}
+
+.service-modal .service-icon {
+  width: 56px;
+  height: 56px;
+  font-size: 1.7rem;
+  margin-bottom: 1.25rem;
+}
+
+.service-modal-title {
+  font-size: clamp(1.4rem, 3.5vw, 1.8rem);
+  font-weight: 700;
+  margin: 0 0 1rem;
+  /* Clear the absolute close button. */
+  padding-right: 3rem;
+}
+
+.service-modal-intro {
+  font-size: 0.98rem;
+  line-height: 1.7;
+  color: #c7c7cc;
+  margin-bottom: 1.75rem;
+}
+
+.service-modal-subtitle {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  margin: 0 0 0.9rem;
+}
+
+.service-modal-list {
+  list-style: none;
+  display: grid;
+  gap: 0.7rem;
+  margin: 0 0 1.75rem;
+}
+
+.service-modal-list li {
+  position: relative;
+  padding-left: 1.75rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #e3e3e6;
+}
+
+.service-modal-list li::before {
+  content: "✓";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 700;
+  color: var(--gold-light);
+}
+
+.service-modal-result {
+  display: grid;
+  gap: 0.35rem;
+  padding: 1rem 1.15rem;
+  margin-bottom: 2rem;
+  border-radius: 10px;
+  border: 1px solid rgba(228, 220, 60, 0.35);
+  background: rgba(196, 186, 2, 0.1);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: #f1f1f4;
+}
+
+.service-modal-result-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+}
+
+/* Footer actions: Back (secondary) + Book a Consultation (primary),
+   centered as a group. */
+.service-modal-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.service-modal-book {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.9rem 2rem;
+  border: none;
+  border-radius: 50px;
+  background: #d4af37;
+  color: var(--ink);
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.3s, filter 0.3s, box-shadow 0.3s;
+}
+
+.service-modal-book:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 8px 24px rgba(196, 186, 2, 0.45);
+}
+
+.service-modal-back {
+  padding: 0.9rem 1.9rem;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 50px;
+  background: transparent;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.3s, background 0.3s, transform 0.3s;
+}
+
+.service-modal-back:hover {
+  border-color: var(--gold-light);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-2px);
+}
+
+.service-modal button:focus-visible,
+.service-modal a:focus-visible {
+  outline: 2px solid var(--gold-light);
+  outline-offset: 3px;
+}
+
+@keyframes service-modal-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes service-modal-pop {
+  from { opacity: 0; transform: translateY(18px) scale(0.97); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Small screens: full-width stacked actions, tighter panel padding. */
+@media (max-width: 600px) {
+  .service-modal-backdrop {
+    padding: 1rem;
+    align-items: flex-start;
+  }
+
+  .service-modal {
+    padding: 2.25rem 1.35rem 1.5rem;
+  }
+
+  .service-modal-actions {
+    align-items: stretch;
+  }
+
+  .service-modal-book,
+  .service-modal-back {
+    width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Reduced motion: no dialog entrance animation. */
+@media (prefers-reduced-motion: reduce) {
+  .service-modal-backdrop,
+  .service-modal,
+  .service-modal-close {
+    animation: none;
+  }
+
+  .service-modal-close:hover,
+  .service-modal-book:hover,
+  .service-modal-back:hover {
+    transform: none;
+  }
 }
 
 
@@ -3512,9 +3931,794 @@ nav a:not(.start-button):hover::after {
 
   color: var(--ink);
 
-  transform: translateY(-2px);
+  transform: translateY(-3px) scale(1.1);
 
   box-shadow: 0 8px 20px rgba(196, 186, 2, 0.45);
+
+}
+
+
+
+.footer-social-link:active {
+
+  transform: translateY(-1px) scale(0.94);
+
+}
+
+
+
+.footer-social-link:focus-visible {
+
+  outline: 2px solid var(--gold-light);
+
+  outline-offset: 3px;
+
+}
+
+
+
+/* --- Footer entrance -----------------------------------------------------
+   The Reveal wrapper fades the whole footer up as it scrolls into view;
+   inside it the logo, social icons and copyright then rise in one after
+   another. The child animations are keyed off .is-shown (added by Reveal
+   when the footer enters the viewport) so the cascade happens as the
+   visitor arrives — not silently at page load while the footer is still
+   off-screen. Same backwards-fill entrance as the header: without the
+   class (no JS, or IntersectionObserver missing) the footer simply renders
+   at rest. */
+
+.footer-reveal.is-shown .footer-logo,
+
+.footer-reveal.is-shown .footer-social-link,
+
+.footer-reveal.is-shown p {
+
+  animation: zd-footer-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+
+}
+
+
+
+.footer-reveal.is-shown .footer-logo {
+
+  animation-delay: 0.1s;
+
+}
+
+.footer-reveal.is-shown .footer-social-link:nth-child(1) { animation-delay: 0.22s; }
+.footer-reveal.is-shown .footer-social-link:nth-child(2) { animation-delay: 0.29s; }
+.footer-reveal.is-shown .footer-social-link:nth-child(3) { animation-delay: 0.36s; }
+.footer-reveal.is-shown .footer-social-link:nth-child(4) { animation-delay: 0.43s; }
+.footer-reveal.is-shown .footer-social-link:nth-child(5) { animation-delay: 0.5s; }
+
+.footer-reveal.is-shown p {
+
+  animation-delay: 0.58s;
+
+}
+
+
+
+@keyframes zd-footer-rise {
+
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+
+}
+
+
+
+/* Logo hover — gentle springy tilt. */
+
+.footer-logo {
+
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+}
+
+.footer-logo:hover {
+
+  transform: translateY(-3px) rotate(-4deg) scale(1.08);
+
+}
+
+
+
+/* --- Privacy policy page (/privacy) --------------------------------------
+   Same visual language as the home page: a gradient hero with the drifting
+   orbs, then a narrow reading column of policy sections. The policy text
+   itself stays plain, selectable HTML — everything below is decoration. */
+
+.privacy-hero {
+
+  background: var(--section-gradient);
+
+  /* Oversized so background-position can pan it, like .hero */
+
+  background-size: 200% 200%;
+
+  animation: zd-hero-pan 20s ease-in-out infinite alternate;
+
+  padding: 6.5rem 2rem 4.5rem;
+
+  text-align: center;
+
+  position: relative;
+
+  overflow: hidden;
+
+}
+
+
+
+.privacy-hero-inner {
+
+  position: relative;
+
+  z-index: 2;
+
+  max-width: 760px;
+
+  margin: 0 auto;
+
+}
+
+
+
+.privacy-kicker {
+
+  font-size: 0.8rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.16em;
+
+  text-transform: uppercase;
+
+  color: var(--gold-light);
+
+  margin-bottom: 0.75rem;
+
+}
+
+
+
+.privacy-hero h1 {
+
+  font-size: clamp(2.4rem, 6vw, 3.6rem);
+
+  font-weight: 700;
+
+  line-height: 1.1;
+
+  letter-spacing: -0.025em;
+
+  color: #ffffff;
+
+  margin-bottom: 1.25rem;
+
+}
+
+
+
+.privacy-lede {
+
+  font-size: 1.1rem;
+
+  line-height: 1.75;
+
+  color: rgba(255, 255, 255, 0.85);
+
+  max-width: 640px;
+
+  margin: 0 auto 1.5rem;
+
+}
+
+
+
+/* "Last updated" chip */
+
+.privacy-updated {
+
+  display: inline-block;
+
+  padding: 0.4rem 1rem;
+
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
+  border-radius: 50px;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  color: #ffffff;
+
+  font-size: 0.82rem;
+
+  margin-bottom: 1.75rem;
+
+}
+
+
+
+.privacy-hero-actions {
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  gap: 1rem;
+
+  flex-wrap: wrap;
+
+}
+
+
+
+/* Secondary hero button — sits beside the shared .cta-button */
+
+.privacy-ghost {
+
+  display: inline-block;
+
+  padding: 0.9rem 2.2rem;
+
+  border-radius: 50px;
+
+  border: 1px solid rgba(255, 255, 255, 0.45);
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-weight: 600;
+
+  font-size: 1rem;
+
+  transition: background 0.3s, border-color 0.3s, transform 0.3s;
+
+}
+
+
+
+.privacy-ghost:hover {
+
+  background: rgba(255, 255, 255, 0.14);
+
+  border-color: var(--gold-light);
+
+  transform: translateY(-2px);
+
+}
+
+
+
+/* Reading column */
+
+.privacy-body {
+
+  background: #ffffff;
+
+  padding: 3.5rem 1.5rem 5rem;
+
+}
+
+
+
+.privacy-container {
+
+  max-width: 780px;
+
+  margin: 0 auto;
+
+}
+
+
+
+/* Table of contents */
+
+.privacy-toc {
+
+  border: 1px solid rgba(44, 44, 44, 0.08);
+
+  border-radius: 16px;
+
+  background: linear-gradient(
+
+    135deg,
+
+    rgba(228, 220, 60, 0.08) 0%,
+
+    rgba(56, 112, 88, 0.06) 100%
+
+  );
+
+  padding: 1.75rem 2rem;
+
+  margin-bottom: 1.5rem;
+
+}
+
+
+
+.privacy-toc h2 {
+
+  font-size: 0.78rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+
+  color: var(--sage-dark);
+
+  margin-bottom: 1.1rem;
+
+}
+
+
+
+.privacy-toc-list {
+
+  list-style: none;
+
+  counter-reset: toc;
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+
+  gap: 0.55rem 1.75rem;
+
+  margin: 0;
+
+  padding: 0;
+
+}
+
+
+
+.privacy-toc-list li {
+
+  counter-increment: toc;
+
+}
+
+
+
+.privacy-toc-list a {
+
+  display: flex;
+
+  gap: 0.6rem;
+
+  align-items: baseline;
+
+  color: var(--ink);
+
+  text-decoration: none;
+
+  font-size: 0.95rem;
+
+  transition: color 0.3s, transform 0.3s;
+
+}
+
+
+
+.privacy-toc-list a::before {
+
+  content: counter(toc, decimal-leading-zero);
+
+  font-size: 0.78rem;
+
+  font-weight: 700;
+
+  color: var(--gold);
+
+}
+
+
+
+.privacy-toc-list a:hover {
+
+  color: var(--gold);
+
+  transform: translateX(3px);
+
+}
+
+
+
+/* Key-takeaway chips — dark glass cards like the service cards */
+
+.privacy-highlights {
+
+  list-style: none;
+
+  display: grid;
+
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+
+  gap: 0.9rem;
+
+  margin: 0 0 3rem;
+
+  padding: 0;
+
+}
+
+
+
+.privacy-highlights li {
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 0.2rem;
+
+  padding: 1rem 1.1rem;
+
+  border: 1px solid rgba(255, 255, 255, 0.14);
+
+  border-radius: 12px;
+
+  background: linear-gradient(
+
+    135deg,
+
+    rgba(48, 48, 51, 0.92) 0%,
+
+    rgba(38, 38, 41, 0.9) 100%
+
+  );
+
+  box-shadow:
+
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+
+    0 4px 16px rgba(44, 44, 44, 0.08);
+
+  color: #ffffff;
+
+}
+
+
+
+.privacy-highlights strong {
+
+  font-size: 0.95rem;
+
+  color: var(--gold-light);
+
+}
+
+
+
+.privacy-highlights span {
+
+  font-size: 0.85rem;
+
+  line-height: 1.5;
+
+  color: #c7c7cc;
+
+}
+
+
+
+/* Policy sections */
+
+.policy-section {
+
+  /* No scroll-margin-top here: html's scroll-padding-top (120px) already
+     clears the sticky header for anchor jumps, and Lenis applies both —
+     adding a margin would push every TOC jump 120px too far. */
+
+  margin-bottom: 2.5rem;
+
+}
+
+
+
+.policy-section h2 {
+
+  font-size: clamp(1.3rem, 3.4vw, 1.6rem);
+
+  font-weight: 700;
+
+  line-height: 1.3;
+
+  color: var(--ink);
+
+  margin-bottom: 0.9rem;
+
+  padding-left: 0.85rem;
+
+  border-left: 4px solid var(--gold);
+
+}
+
+
+
+.policy-section p {
+
+  font-size: 1rem;
+
+  line-height: 1.8;
+
+  color: var(--muted);
+
+  margin-bottom: 1rem;
+
+}
+
+
+
+.policy-section p:last-child {
+
+  margin-bottom: 0;
+
+}
+
+
+
+.policy-section strong {
+
+  color: var(--ink);
+
+  font-weight: 600;
+
+}
+
+
+
+.policy-section a {
+
+  color: var(--gold);
+
+  text-decoration: underline;
+
+  text-underline-offset: 3px;
+
+  transition: color 0.3s;
+
+}
+
+
+
+.policy-section a:hover {
+
+  color: var(--sage-dark);
+
+}
+
+
+
+.policy-list {
+
+  list-style: none;
+
+  margin: 0 0 1rem;
+
+  padding: 0;
+
+}
+
+
+
+.policy-list li {
+
+  position: relative;
+
+  padding-left: 1.6rem;
+
+  margin-bottom: 0.7rem;
+
+  font-size: 1rem;
+
+  line-height: 1.75;
+
+  color: var(--muted);
+
+}
+
+
+
+.policy-list li::before {
+
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+
+  top: 0.72em;
+
+  width: 8px;
+
+  height: 8px;
+
+  border-radius: 50%;
+
+  background: var(--yellow-gradient);
+
+}
+
+
+
+/* Closing contact card — gradient panel echoing the hero */
+
+.privacy-contact {
+
+  margin-top: 3rem;
+
+  padding: 2.5rem 2rem;
+
+  border-radius: 20px;
+
+  border: 1px solid rgba(255, 255, 255, 0.2);
+
+  text-align: center;
+
+  color: #ffffff;
+
+  background: var(--section-gradient);
+
+  background-size: 200% 200%;
+
+  animation: zd-hero-pan 20s ease-in-out infinite alternate;
+
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.18);
+
+}
+
+
+
+.privacy-contact h2 {
+
+  font-size: clamp(1.3rem, 3vw, 1.6rem);
+
+  font-weight: 700;
+
+  color: #ffffff;
+
+  margin-bottom: 0.75rem;
+
+}
+
+
+
+.privacy-contact p {
+
+  max-width: 520px;
+
+  margin: 0 auto 1.5rem;
+
+  font-size: 1rem;
+
+  line-height: 1.7;
+
+  color: rgba(255, 255, 255, 0.85);
+
+}
+
+
+
+.privacy-contact-links {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  justify-content: center;
+
+  gap: 0.7rem;
+
+}
+
+
+
+.privacy-contact-links a {
+
+  padding: 0.55rem 1.15rem;
+
+  border-radius: 50px;
+
+  border: 1px solid rgba(255, 255, 255, 0.4);
+
+  background: rgba(255, 255, 255, 0.12);
+
+  color: #ffffff;
+
+  text-decoration: none;
+
+  font-size: 0.92rem;
+
+  font-weight: 600;
+
+  transition: background 0.3s, border-color 0.3s, color 0.3s, transform 0.3s;
+
+}
+
+
+
+.privacy-contact-links a:hover {
+
+  background: var(--gold);
+
+  border-color: var(--gold);
+
+  color: var(--ink);
+
+  transform: translateY(-2px);
+
+}
+
+
+
+/* Footer: privacy policy link inside the copyright line (it rides the
+   same entrance animation as the rest of the .footer-reveal children). */
+
+.footer p a {
+
+  color: #ffffff;
+
+  text-decoration: underline;
+
+  text-underline-offset: 3px;
+
+  transition: color 0.3s;
+
+}
+
+
+
+.footer p a:hover {
+
+  color: var(--gold-light);
+
+}
+
+
+
+/* Small screens: tighten the gutters, the type scale is fluid already. */
+
+@media (max-width: 600px) {
+
+  .privacy-hero {
+
+    padding: 4.5rem 1.25rem 3rem;
+
+  }
+
+  .privacy-toc {
+
+    padding: 1.35rem 1.25rem;
+
+  }
+
+  .privacy-body {
+
+    padding: 2.5rem 1.15rem 4rem;
+
+  }
+
+  .privacy-contact {
+
+    padding: 2rem 1.25rem;
+
+  }
 
 }
 
@@ -3789,6 +4993,23 @@ nav a:not(.start-button):hover::after {
     pointer-events: auto;
 
   }
+
+
+
+  /* Links cascade in behind the opening panel (same backwards-fill
+     entrance as the desktop nav). */
+
+  .mobile-menu.open nav a {
+
+    animation: zd-header-rise 0.45s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+
+  }
+
+  .mobile-menu.open nav a:nth-child(1) { animation-delay: 0.08s; }
+  .mobile-menu.open nav a:nth-child(2) { animation-delay: 0.14s; }
+  .mobile-menu.open nav a:nth-child(3) { animation-delay: 0.2s; }
+  .mobile-menu.open nav a:nth-child(4) { animation-delay: 0.26s; }
+  .mobile-menu.open nav a:nth-child(5) { animation-delay: 0.32s; }
 
 
 
@@ -4179,6 +5400,73 @@ nav a:not(.start-button):hover::after {
     transform: none;
 
     transition: none;
+
+  }
+
+
+
+  /* Header/footer entrances are decorative only — content and hover states
+     fall back to their resting styles. */
+
+  .header-container .logo,
+
+  .header-container .desktop-nav > a,
+
+  .header-container .hamburger,
+
+  .mobile-menu.open nav a,
+
+  .footer-reveal.is-shown .footer-logo,
+
+  .footer-reveal.is-shown .footer-social-link,
+
+  .footer-reveal.is-shown p,
+
+  .logo,
+
+  .footer-logo {
+
+    animation: none;
+
+    transition: none;
+
+  }
+
+
+
+  .logo:hover,
+
+  .footer-logo:hover,
+
+  .footer-social-link:hover,
+
+  .footer-social-link:active {
+
+    transform: none;
+
+  }
+
+
+
+  /* Privacy page: freeze the panning gradients, keep the text static. */
+
+  .privacy-hero,
+
+  .privacy-contact {
+
+    animation: none;
+
+  }
+
+
+
+  .privacy-ghost:hover,
+
+  .privacy-toc-list a:hover,
+
+  .privacy-contact-links a:hover {
+
+    transform: none;
 
   }
 

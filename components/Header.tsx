@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 
 const navLinks = [
   { href: "#", label: "Home" },
@@ -16,6 +17,27 @@ const GET_STARTED_HREF = "#contact-form";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  // The nav targets are in-page anchors (#services, #contact-form, …), which
+  // only make sense on the home page. From any other route (e.g. /privacy)
+  // they are re-pointed at the home page first, so a click still lands on the
+  // right section instead of silently matching nothing.
+  const pathname = usePathname();
+  const hrefFrom = (href: string) => {
+    if (pathname === "/") return href;
+    return href === "#" ? "/" : `/${href}`;
+  };
+
+  // Once the page scrolls, the bar swaps to a stronger shadow so it reads
+  // as floating above the sections instead of sitting flush with them.
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   // Close the menu with the Escape key
   useEffect(() => {
@@ -51,10 +73,10 @@ export default function Header() {
   }, [menuOpen]);
 
   return (
-    <header className="header">
+    <header className={`header${scrolled ? " is-scrolled" : ""}`}>
       <div className="header-container">
         <a
-          href="#"
+          href={hrefFrom("#")}
           className="logo"
           aria-label="ZeDeploy home"
           onClick={() => setMenuOpen(false)}
@@ -70,11 +92,11 @@ export default function Header() {
 
         <nav className="desktop-nav" aria-label="Main navigation">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href}>
+            <a key={link.href} href={hrefFrom(link.href)}>
               {link.label}
             </a>
           ))}
-          <a href={GET_STARTED_HREF} className="start-button">
+          <a href={hrefFrom(GET_STARTED_HREF)} className="start-button">
             Get Started
           </a>
         </nav>
@@ -101,14 +123,14 @@ export default function Header() {
           {navLinks.map((link) => (
             <a
               key={link.href}
-              href={link.href}
+              href={hrefFrom(link.href)}
               onClick={() => setMenuOpen(false)}
             >
               {link.label}
             </a>
           ))}
           <a
-            href={GET_STARTED_HREF}
+            href={hrefFrom(GET_STARTED_HREF)}
             className="start-button"
             onClick={() => setMenuOpen(false)}
           >
