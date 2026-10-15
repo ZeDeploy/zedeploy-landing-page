@@ -46,86 +46,96 @@ export default function ContactForm() {
   return (
     <section className="contact-section contact-form-section" id="contact-form">
       <div className="contact-container">
-        <Reveal>
-          <h2 className="section-title">Get Started with ZeDeploy</h2>
-        </Reveal>
+        {/* Split-panel card: dark brand panel + light form panel */}
         <Reveal from="scale" delay={120}>
           <div className="form-wrapper">
-            <form onSubmit={handleSubmit}>
-              <fieldset className="form-fieldset" disabled={submitted}>
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="firstName">First Name</label>
-                    <input
-                      type="text"
-                      id="firstName"
-                      name="firstName"
-                      required
-                    />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="lastName">Last Name</label>
-                    <input type="text" id="lastName" name="lastName" required />
-                  </div>
-                </div>
+            <div className="form-intro">
+              <h2 className="form-title">Get Started with ZeDeploy</h2>
+            </div>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="email">Email Address</label>
-                    <input type="email" id="email" name="email" required />
+            <div className="form-body">
+              <form onSubmit={handleSubmit}>
+                <fieldset className="form-fieldset" disabled={submitted}>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="firstName">First Name</label>
+                      <input
+                        type="text"
+                        id="firstName"
+                        name="firstName"
+                        required
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="lastName">Last Name</label>
+                      <input
+                        type="text"
+                        id="lastName"
+                        name="lastName"
+                        required
+                      />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" />
-                  </div>
-                </div>
 
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="company">Company Name</label>
-                    <input type="text" id="company" name="company" required />
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="email">Email Address</label>
+                      <input type="email" id="email" name="email" required />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="phone">Phone Number</label>
+                      <input type="tel" id="phone" name="phone" />
+                    </div>
                   </div>
-                  <div className="form-group">
-                    <label htmlFor="industry">Industry</label>
-                    <select id="industry" name="industry" required>
-                      <option value="">Select an industry</option>
-                      {industries.map((industry) => (
-                        <option key={industry} value={industry}>
-                          {industry.charAt(0).toUpperCase() + industry.slice(1)}
-                        </option>
-                      ))}
-                    </select>
+
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label htmlFor="company">Company Name</label>
+                      <input type="text" id="company" name="company" required />
+                    </div>
+                    <div className="form-group">
+                      <label htmlFor="industry">Industry</label>
+                      <select id="industry" name="industry" required>
+                        <option value="">Select an industry</option>
+                        {industries.map((industry) => (
+                          <option key={industry} value={industry}>
+                            {industry.charAt(0).toUpperCase() +
+                              industry.slice(1)}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
-                </div>
 
-                <div className="form-group full">
-                  <label htmlFor="message">
-                    Tell us about your infrastructure needs
-                  </label>
-                  <textarea id="message" name="message" required />
-                </div>
+                  <div className="form-group full">
+                    <label htmlFor="message">
+                      Tell us about your infrastructure needs
+                    </label>
+                    <textarea id="message" name="message" required />
+                  </div>
 
-                <button
-                  type="submit"
-                  className="form-submit"
-                  disabled={sending || submitted}
-                >
-                  {submitted ? "✓ Submitted Successfully!" : "Submit"}
-                </button>
-                {error && (
-                  <p className="form-message form-message-error">
-                    Something went wrong sending your message. Please try again
-                    in a moment.
-                  </p>
-                )}
-                {submitted && (
-                  <p className="form-message form-message-success">
-                    We&apos;ll get back to you within 24 hours with a
-                    personalized proposal.
-                  </p>
-                )}
-              </fieldset>
-            </form>
+                  <button
+                    type="submit"
+                    className="form-submit"
+                    disabled={sending || submitted}
+                  >
+                    {submitted ? "✓ Submitted Successfully!" : "Submit"}
+                  </button>
+                  {error && (
+                    <p className="form-message form-message-error">
+                      Something went wrong sending your message. Please try
+                      again in a moment.
+                    </p>
+                  )}
+                  {submitted && (
+                    <p className="form-message form-message-success">
+                      We&apos;ll get back to you within 24 hours with a
+                      personalized proposal.
+                    </p>
+                  )}
+                </fieldset>
+              </form>
+            </div>
           </div>
         </Reveal>
       </div>
