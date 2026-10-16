@@ -1276,7 +1276,21 @@ nav a:not(.start-button):hover::after {
   /* Once the fan-out pin releases, the bottom row (cards 4-6) sits only
      the grid's margin away from the Infrastructure section — add real
      breathing room below the last cards. */
+  /* Positioning context so the decorative ::before/::after orbs anchor
+     to the section's own corners. Without it their containing block was
+     the viewport — they escaped `overflow: clip`, extended ~160px past
+     the right edge (permanent horizontal pan-space on phones), and
+     rendered one viewport-corner off from where they were designed. */
+  position: relative;
   padding: 0 0 5rem;
+  /* The section's decorative corner orbs (::before/::after) are sized in
+     rem and pushed past the edges (right: -10rem ≙ 160px past a phone
+     viewport). Without a clip here they extend the document's horizontal
+     scroll area, leaving a permanent blank strip on the right on mobile.
+     `clip` (not `hidden`) also avoids creating a new formatting context,
+     and the fan-out/hover transforms all stay within the section's own
+     box, so nothing visible is cut off. */
+  overflow: clip;
 }
 
 /* --- Depth stack & fan-out (GSAP ScrollTrigger) --------------------------
@@ -2802,18 +2816,33 @@ nav a:not(.start-button):hover::after {
 
   line-height: 1.7;
 
+}.contact-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  gap: 1.5rem;
 }
 
+/* Each contact card sits inside a Reveal wrapper (staggered scroll-in,
+   which is also the touch-visible version of the desktop hover lift —
+   :hover never fires on touch). The wrapper is the grid item, so it
+   must stretch and pass the full height to the card to keep every card
+   in a row the same height, same convention as the services grid. */
+.contact-cards .reveal {
+  height: 100%;
+}
+.contact-cards .reveal > .contact-card {
+  height: 100%;
+}
 
-
-.contact-cards {
-
-  display: grid;
-
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-
-  gap: 1.5rem;
-
+/* Each #89 contact card now sits inside a Reveal wrapper (staggered
+   scroll-in on touch — :hover never fires there). The wrapper becomes
+   the grid item, so it must stretch and pass the full height to the
+   card, same convention as the services grid. */
+.contact-cards .reveal {
+  height: 100%;
+}
+.contact-cards .reveal > .contact-card {
+  height: 100%;
 }
 
 
@@ -3009,20 +3038,13 @@ nav a:not(.start-button):hover::after {
 
   font-size: 1rem;
 
-}
-
-
-
-.contact-card-value a {
-
+}.contact-card-value a {
   display: block;
-
   color: inherit;
-
   text-decoration: none;
-
   transition: color 0.3s;
-
+  /* Long emails must not stretch a card wider than the viewport. */
+  overflow-wrap: anywhere;
 }
 
 
@@ -3176,7 +3198,9 @@ nav a:not(.start-button):hover::after {
     linear-gradient(#ffffff, #ffffff) padding-box,
     var(--yellow-gradient) border-box;
   color: var(--ink);
-  font-size: 0.95rem;
+  /* ≥16px: iOS Safari auto-zooms the viewport to focus on any field
+     whose font is smaller than 16px — jarring on phones. */
+  font-size: 1rem;
   font-family: inherit;
   transition: box-shadow 0.25s;
 }
@@ -4691,18 +4715,13 @@ nav a:not(.start-button):hover::after {
 
 
 
-@media (max-width: 768px) {
-
-  .whatsapp-float {
-
+@media (max-width: 768px) {  .whatsapp-float {
     width: 48px;
-
     height: 48px;
-
-    right: 1rem;
-
-    bottom: 1rem;
-
+    /* Keep clear of the rounded corners / home indicator on notched
+       iPhones (viewport-fit: cover exposes these env() values). */
+    right: calc(1rem + env(safe-area-inset-right, 0px));
+    bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
   }
 
 
@@ -4735,16 +4754,11 @@ nav a:not(.start-button):hover::after {
 
     display: none;
 
-  }
-
-
-
-  .logo img {
-
+  }  .logo img {
     width: auto;
-
-    height: 66px;
-
+    /* Smaller brand mark on phones: keeps the sticky bar compact and
+       leaves more of the viewport to the content. */
+    height: 46px;
   }
 
 
@@ -4865,13 +4879,10 @@ nav a:not(.start-button):hover::after {
 
     pointer-events: none;
 
-  }
-
-
-
-  .mobile-menu.open {
-
-    max-height: 340px;
+  }  .mobile-menu.open {
+    /* Generous cap with a content-sized fallback: larger system fonts
+       must never clip the last link or the Get Started button. */
+    max-height: min(60vh, 560px);
 
     opacity: 1;
 
@@ -5139,12 +5150,12 @@ nav a:not(.start-button):hover::after {
 
 
   
-  /* Contact cards + form: roomier touch targets on small screens */
-
+  /* Contact cards + form: roomier touch targets on small screens */  /* Contact cards are wrapped in individually staggered Reveal
+     components (visible motion on touch, where :hover never fires).
+     The wrapper is the grid item, so it must stretch and pass the full
+     height to the card — same convention as the services grid. */
   .contact-card {
-
     padding: 1.5rem 1.25rem;
-
   }
 
 
@@ -5364,15 +5375,153 @@ nav a:not(.start-button):hover::after {
 
 
   .privacy-ghost:hover,
-
   .privacy-toc-list a:hover,
-
   .privacy-contact-links a:hover {
-
     transform: none;
+  }
+}
 
+/* --- Short viewports (landscape phones, small laptop windows) -------------
+   The hero, stats and final-CTA sections are full-viewport height on
+   desktop. On a short viewport that forces awkward scrolling inside a
+   padded box or clips centered content, so let them size to their
+   content instead. */
+@media (max-height: 640px) {
+  .hero,
+  .stats,
+  .final-cta {
+    min-height: 0;
+  }
+}
+
+/* --- Touch devices (hover: none) ------------------------------------------
+   Phones never get :hover, so every hover-gated highlight must have a
+   tap equivalent. :hover on touch briefly "sticks" after a tap, so all
+   hover visuals here are darkened instead: prefers-reduced-motion is
+   untouched, and the hover blocks that set --hover-lift/--rx/--ry are
+   simply unreachable (no cursor). */
+@media (hover: none) {
+  /* Sticky tap-highlight: :hover fires on touchstart and then LINGERS
+     after the finger lifts, which left a card permanently gold-lit (glare
+     at 0.25 plus the hover glow shadow) — measured, not hypothetical.
+     So every hover-gated card visual is reset here: on a device that
+     cannot hover, the press state below (.is-pressed, driven by JS
+     pointer events) is the only lit state, and it fades out on its own.
+     These reset rules are declared before the .is-pressed block at the
+     end of this file, so the press treatment wins every tie. */
+  .service-card:hover {
+    --hover-lift: 0px;
+    --hover-zoom: 0;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 4px 16px rgba(44, 44, 44, 0.08);
   }
 
+  .service-card:hover .service-icon {
+    transform: none;
+  }
+
+  .tilt-card:hover {
+    --lift: 0px;
+  }
+
+  .service-card:hover::after,
+  .tilt-card:hover::after {
+    opacity: 0;
+  }
+
+  /* Velvet press feedback for every tappable element. :active fires on
+     touch as soon as the finger lands (hover: none matches all touch
+     devices, including iPads and hybrid laptops in tablet mode). */
+  .mobile-menu nav a:active,
+  .mobile-menu .start-button:active {
+    background: rgba(196, 186, 2, 0.2);
+  }
+
+  .start-button:active,
+  .cta-button:active,
+  .form-submit:active,
+  .service-modal-book:active,
+  .service-modal-back:active {
+    filter: brightness(0.92);
+    transform: scale(0.97);
+  }
+
+  /* Tap the card and it plays the full desktop hover treatment — lift,
+     gold glow, icon pop, glare. :hover never fires on touch, so :active
+     is the only moment these cards can visibly animate. */
+  .service-card:active {
+    --hover-lift: -4px;
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.08),
+      0 12px 32px rgba(196, 186, 2, 0.35);
+  }
+
+  .service-card:active .service-icon {
+    transform: scale(1.15) rotate(-6deg);
+  }
+
+  .tilt-card:active {
+    --lift: -4px;
+  }
+
+  .contact-card:active {
+    box-shadow: 0 12px 32px rgba(196, 186, 2, 0.35);
+  }
+
+  .service-card:active::after,
+  .tilt-card:active::after {
+    opacity: 1;
+  }
+
+  /* Longer tap targets for the stacked footer social circle row. */
+  .footer-social-link {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* No cursor means the rotate-90 close button and sweeping gold
+     underline never show; keep their :hover variants inert. */
+  .service-modal-close:hover {
+    transform: none;
+  }
+}
+
+/* Pointer-fine devices keep the existing desktop hover treatment
+   untouched — everything above lives inside (hover: none) only. */
+
+/* --- Pointer press state (.is-pressed) -------------------------------------
+   TiltCard adds .is-pressed on pointerdown and drops it ~320ms after
+   release. It exists because the tap path was measured to be dead:
+   :hover never fires on touch, and emulated/touch input never enters
+   :active at all (plus iOS Safari honours :active only when an ancestor
+   has an onclick handler). pointerdown/up fire on every touch device, so
+   the card replays the full desktop hover treatment from JS instead.
+   These sit after every :hover/:active rule above, so they win ties; a
+   mouse press on desktop reads the same as its own hover, which is the
+   intended look. */
+.service-card.is-pressed {
+  --hover-lift: -4px;
+  --hover-zoom: 0;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 32px rgba(196, 186, 2, 0.35);
+}
+
+.service-card.is-pressed .service-icon {
+  transform: scale(1.15) rotate(-6deg);
+}
+
+.service-card.is-pressed::after,
+.tilt-card.is-pressed::after {
+  opacity: 1;
+}
+
+.tilt-card.is-pressed {
+  --lift: -4px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 12px 32px rgba(196, 186, 2, 0.35);
 }
 
 

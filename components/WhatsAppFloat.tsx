@@ -5,20 +5,13 @@ import { useEffect, useState } from "react";
 // Opens a WhatsApp chat with +91 7510936939
 const WHATSAPP_URL = "https://wa.me/917510936939";
 
-// Show the button once the visitor has scrolled a little, and hide it
-// while the footer is on screen (it already has a WhatsApp icon there).
-const SCROLL_THRESHOLD = 160;
-
+// Visible from the moment the page loads (previously it required a 160px
+// scroll first, which left it invisible at the top of the home page —
+// exactly where a visitor decides to get in touch). It still hides itself
+// while the footer is on screen: the footer already carries a WhatsApp
+// icon, so the float would only duplicate it there.
 export default function WhatsAppFloat() {
-  const [scrolled, setScrolled] = useState(false);
   const [footerVisible, setFooterVisible] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > SCROLL_THRESHOLD);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   useEffect(() => {
     const footer = document.querySelector(".footer");
@@ -31,7 +24,7 @@ export default function WhatsAppFloat() {
     return () => observer.disconnect();
   }, []);
 
-  const visible = scrolled && !footerVisible;
+  const visible = !footerVisible;
 
   return (
     <a

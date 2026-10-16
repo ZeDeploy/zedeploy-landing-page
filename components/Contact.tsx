@@ -76,37 +76,39 @@ export default function Contact() {
 
         <Reveal from="scale" delay={240}>
           <div className="contact-cards">
-            <TiltCard className="contact-card tilt-card">
-              <span className="contact-card-icon" aria-hidden="true">
-                <MailIcon />
-              </span>
-              <span className="contact-card-label">Email Us</span>
-              <span className="contact-card-value">
-                <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
-              </span>
-            </TiltCard>
-
-            <TiltCard className="contact-card tilt-card">
-              <span className="contact-card-icon" aria-hidden="true">
-                <PhoneIcon />
-              </span>
-              <span className="contact-card-label">Call Us</span>
-              <span className="contact-card-value">
-                {PHONES.map((phone) => (
+            {[
+              {
+                label: "Email Us",
+                icon: <MailIcon />,
+                value: (
+                  <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+                ),
+              },
+              {
+                label: "Call Us",
+                icon: <PhoneIcon />,
+                value: PHONES.map((phone) => (
                   <a key={phone} href={`tel:${phone.replace(/\s/g, "")}`}>
                     {phone}
                   </a>
-                ))}
-              </span>
-            </TiltCard>
-
-            <TiltCard className="contact-card tilt-card">
-              <span className="contact-card-icon" aria-hidden="true">
-                <PinIcon />
-              </span>
-              <span className="contact-card-label">Visit Us</span>
-              <span className="contact-card-value">{LOCATIONS}</span>
-            </TiltCard>
+                )),
+              },
+              {
+                label: "Visit Us",
+                icon: <PinIcon />,
+                value: LOCATIONS,
+              },
+            ].map(({ label, icon, value }, index) => (
+              <Reveal key={label} from="up" delay={index * 110}>
+                <TiltCard className="contact-card tilt-card">
+                  <span className="contact-card-icon" aria-hidden="true">
+                    {icon}
+                  </span>
+                  <span className="contact-card-label">{label}</span>
+                  <span className="contact-card-value">{value}</span>
+                </TiltCard>
+              </Reveal>
+            ))}
           </div>
         </Reveal>
       </div>

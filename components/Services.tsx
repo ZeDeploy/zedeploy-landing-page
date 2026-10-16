@@ -150,6 +150,23 @@ export default function Services() {
   const openerRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  // Small screens skip the GSAP fan-out (Services renders the pinned deck
+  // only ≥769px), so the cards get the same visible motion as every other
+  // section: a staggered scroll-reveal. Touched on mobile instead of a
+  // CSS :hover, which never fires — see the (hover: none) rules in
+  // globals.css for the tap equivalent.
+  // SSR renders without wrappers; the flag flips after hydration so the
+  // server at rest is stable. (On mobile the grid sits below the fold, so
+  // the cards are hidden then rise in — no jump on the initial screen.)
+  const [compact, setCompact] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 768px)");
+    const update = () => setCompact(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
   useEffect(() => {
     const section = sectionRef.current;
     if (!section) return;
@@ -158,41 +175,54 @@ export default function Services() {
 
     const ctx = gsap.context(() => {
       const cards = gsap.utils.toArray<HTMLElement>(".service-card", section);
-      // Snap the deck into its stacked state right after hydration (the
-      // section sits below the fold, so no visible flash).
-      gsap.set(cards, { "--fan": 0 });
-      gsap.to(cards, {
-        "--fan": 1,
-        ease: "power2.inOut",
-        scrollTrigger: {
-          trigger: section,
-          // Start when the section top reaches the sticky header's bottom
-          // edge (~80px); hold for 1200px of scroll, like the reference.
-          start: "top 80px",
-          end: "+=1200",
-          scrub: 1, // 1s smoothing lag behind the scrollbar
-          pin: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          // While the fan-out is scrubbing (progress < 1) the cards are in
-          // motion under the cursor: a hover would leave a card lifted and
-          // glowing mid-air ("stuck") and a click would fire mid-scroll.
-          // Flag the section so CSS can disable pointer interaction, and
-          // clear any dialog opened before the scroll started.
-          onUpdate: (self) => {
-            const fanning = self.progress < 1;
-            if (fanning === wasFanning.current) return;
-            wasFanning.current = fanning;
-            section.classList.toggle("is-fanning", fanning);
-            if (fanning) setSelected(null);
+      const mm = gsap.matchMedia();
+
+      // Desktop only: pinned deck + fan-out. Small screens skip the pin —
+      // scroll-jacking 1200px on a phone is disorienting; cards render in
+      // their normal grid flow instead (gsap.matchMedia re-evaluates on
+      // resize, so rotating a device reverts/restores cleanly).
+      mm.add("(min-width: 769px)", () => {
+        // Snap the deck into its stacked state right after hydration (the
+        // section sits below the fold, so no visible flash).
+        gsap.set(cards, { "--fan": 0 });
+        gsap.to(cards, {
+          "--fan": 1,
+          ease: "power2.inOut",
+          scrollTrigger: {
+            trigger: section,
+            // Start when the section top reaches the sticky header's bottom
+            // edge (~80px); hold for 1200px of scroll, like the reference.
+            start: "top 80px",
+            end: "+=1200",
+            scrub: 1, // 1s smoothing lag behind the scrollbar
+            pin: true,
+            anticipatePin: 1,
+            invalidateOnRefresh: true,
+            // While the fan-out is scrubbing (progress < 1) the cards are in
+            // motion under the cursor: a hover would leave a card lifted and
+            // glowing mid-air ("stuck") and a click would fire mid-scroll.
+            // Flag the section so CSS can disable pointer interaction, and
+            // clear any dialog opened before the scroll started.
+            onUpdate: (self) => {
+              const fanning = self.progress < 1;
+              if (fanning === wasFanning.current) return;
+              wasFanning.current = fanning;
+              section.classList.toggle("is-fanning", fanning);
+              if (fanning) setSelected(null);
+            },
+            // Scrolling back up past the start releases the pin — cards are
+            // interactive again (they're already moving off-screen).
+            onLeaveBack: () => {
+              wasFanning.current = false;
+              section.classList.remove("is-fanning");
+            },
           },
-          // Scrolling back up past the start releases the pin — cards are
-          // interactive again (they're already moving off-screen).
-          onLeaveBack: () => {
-            wasFanning.current = false;
-            section.classList.remove("is-fanning");
-          },
-        },
+        });
+      });
+
+      // Mobile/tablet: guarantee the settled state, no pin, no scrub.
+      mm.add("(max-width: 768px)", () => {
+        gsap.set(cards, { "--fan": 1 });
       });
     }, section);
 
@@ -279,28 +309,38 @@ export default function Services() {
             <h2 className="section-title">Our Services</h2>
           </Reveal>
           <div className="services-grid">
-            {services.map((item, index) => (
-              /* No Reveal wrapper here on purpose: the pinned fan-out scrub IS
-                 the entrance animation. A second, staggered opacity transition
-                 firing mid-scrub made the cards flicker. */
-              <TiltCard key={item.title} className="service-card">
-                <div className="service-icon">{item.icon}</div>
-                <h3>
-                  <button
-                    type="button"
-                    className="service-title-button"
-                    aria-haspopup="dialog"
-                    onClick={(event) => {
-                      openerRef.current = event.currentTarget;
-                      openDialog(index);
-                    }}
-                  >
-                    {item.title}
-                  </button>
-                </h3>
-                <p>{item.description}</p>
-              </TiltCard>
-            ))}
+            {services.map((item, index) => {
+              const card = (
+                <TiltCard key={item.title} className="service-card">
+                  <div className="service-icon">{item.icon}</div>
+                  <h3>
+                    <button
+                      type="button"
+                      className="service-title-button"
+                      aria-haspopup="dialog"
+                      onClick={(event) => {
+                        openerRef.current = event.currentTarget;
+                        openDialog(index);
+                      }}
+                    >
+                      {item.title}
+                    </button>
+                  </h3>
+                  <p>{item.description}</p>
+                </TiltCard>
+              );
+
+              // Compact screens: the staggered reveal IS the entrance.
+              // Wider screens keep the fan-out deck (no second animation
+              // layered mid-scrub, which previously made cards flicker).
+              return compact ? (
+                <Reveal from="up" delay={index * 90}>
+                  {card}
+                </Reveal>
+              ) : (
+                card
+              );
+            })}
           </div>
         </div>
       </section>

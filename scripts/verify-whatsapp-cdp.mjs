@@ -1,6 +1,8 @@
 // Verification: drives headless Chrome over CDP and checks the floating
-// WhatsApp button behavior — hidden at the top of the page, visible once
-// scrolled, and hidden again while the footer is on screen.
+// WhatsApp button behavior — visible from page load, and hidden again
+// while the footer is on screen (the footer carries its own WhatsApp
+// icon). Previously the button also hid until a 160px scroll; it is now
+// always visible at the top, so the assertion changed with the behavior.
 import { spawn, execSync } from "node:child_process";
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
@@ -94,7 +96,7 @@ const stateExpr = `(() => {
 
 const results = {};
 
-// 1) At the top of the page: hidden
+// 1) At the top of the page: visible
 results.atTop = await evaluate(stateExpr);
 
 // 2) Mid-page: visible
@@ -115,8 +117,9 @@ console.log("at footer  :", JSON.stringify(results.atFooter));
 
 const pass =
   results.atTop.exists &&
-  !results.atTop.hasVisibleClass &&
-  results.atTop.opacity === 0 &&
+  results.atTop.hasVisibleClass &&
+  results.atTop.opacity === 1 &&
+  results.atTop.clickable &&
   results.midPage.exists &&
   results.midPage.hasVisibleClass &&
   results.midPage.opacity === 1 &&
