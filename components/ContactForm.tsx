@@ -50,7 +50,20 @@ export default function ContactForm() {
         <Reveal from="scale" delay={120}>
           <div className="form-wrapper">
             <div className="form-intro">
-              <h2 className="form-title">Get Started with ZeDeploy</h2>
+              <p className="form-kicker">Start Your Project</p>
+              <h2 className="form-title">
+                Get Started with <span className="form-title-highlight">ZeDeploy</span>
+              </h2>
+              <p className="form-lede">
+                Tell us what you&apos;re running — a single server, a growing
+                app or a full migration — and we&apos;ll come back with a plan
+                that fits.
+              </p>
+              <ul className="form-points">
+                <li>Free, no-obligation consultation</li>
+                <li>Custom proposal within 24 hours</li>
+                <li>Direct support from our Kochi team</li>
+              </ul>
             </div>
 
             <div className="form-body">

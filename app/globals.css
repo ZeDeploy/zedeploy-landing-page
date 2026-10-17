@@ -3077,10 +3077,15 @@ nav a:not(.start-button):hover::after {
   position: relative;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  text-align: center;
   justify-content: center;
   padding: 3rem 2.5rem;
   overflow: hidden;
   color: #ffffff;
+  /* Keeps the heading sized relative to the panel width so it wraps
+     naturally without clipping on narrow stacks. */
+  container-type: inline-size;
   background:
     radial-gradient(
       420px 260px at 12% 10%,
@@ -3122,23 +3127,85 @@ nav a:not(.start-button):hover::after {
   pointer-events: none;
 }
 
-.form-title {
-  font-size: clamp(1.6rem, 3.2vw, 2rem);
+/* Eyebrow label above the heading — same uppercase/gold language as
+   .contact-kicker, but framed as a pill so it reads as a panel tag. */
+.form-kicker {
+  align-self: center;
+  font-size: 0.78rem;
   font-weight: 700;
-  line-height: 1.3;
-  color: #ffffff;
-  margin: 0;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(228, 220, 60, 0.4);
+  background: rgba(228, 220, 60, 0.1);
+  margin-bottom: 1.15rem;
 }
 
-/* Gold underline bar beneath the heading */
-.form-title::after {
+.form-title {
+  font-size: clamp(1.25rem, 4.2cqw, 1.8rem);
+  font-weight: 700;
+  line-height: 1.25;
+  color: #ffffff;
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Supporting copy under the gold rule: keeps the heading from floating
+   alone in the tall dark panel. */
+.form-lede {
+  margin: 1.6rem 0 0;
+  max-width: 36ch;
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* What happens after they submit — gold ticks, aligned to the heading's
+   left edge so the whole panel hangs off one axis. */
+.form-points {
+  list-style: none;
+  margin: 1.75rem 0 0;
+  padding: 1.4rem 0 0;
+  display: grid;
+  gap: 0.7rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  align-self: stretch;
+  text-align: left;
+}
+
+.form-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: rgba(255, 255, 255, 0.86);
+  font-size: 0.93rem;
+  line-height: 1.5;
+}
+
+.form-points li::before {
+  content: "\2713";
+  flex: none;
+  color: var(--gold-light);
+  font-weight: 700;
+}
+
+/* Gold underline bar that spans underneath the highlighted brand name */
+.form-title-highlight {
+  display: inline-block;
+  position: relative;
+}
+
+.form-title-highlight::after {
   content: "";
-  display: block;
-  width: 56px;
+  position: absolute;
+  left: -0.25rem;
+  right: -0.25rem;
+  bottom: -0.5rem;
   height: 4px;
   border-radius: 999px;
   background: var(--yellow-gradient);
-  margin-top: 0.9rem;
 }
 
 .form-body {
@@ -5171,6 +5238,20 @@ nav a:not(.start-button):hover::after {
   .form-intro {
 
     padding: 2.25rem 1.5rem 2.5rem;
+
+  }
+
+
+
+  .form-title {
+
+    font-size: clamp(1.15rem, 5cqw, 1.5rem);
+
+  }
+
+  .form-title-highlight::after {
+
+    bottom: -0.4rem;
 
   }
 
